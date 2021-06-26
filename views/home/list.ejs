@@ -21,7 +21,7 @@
         </ul>
       </div>
       <div class="row align-items-end" style="margin-right: 10px;">
-        <a class="btn btn-outline-success" href="login">Sign out</a>
+        <a class="btn btn-outline-success" href="/logout">Sign out</a>
       
     </div>
     </div>
@@ -36,8 +36,8 @@
     <label for="ID" class="col-sm-2 col-form-label">ID</label >
     <div class="col-sm-10">
       <input
-        type="text"
-       
+        type="number"
+        value="<%= query.id %>"
         class="form-control"
         id="ID"
         name="id"
@@ -54,8 +54,8 @@
     <label for="Name" class="col-sm-2 col-form-label">Name</label >
     <div class="col-sm-10">
       <input
-        type="number"
-        
+        type="text"
+        value="<%= query.name %>"
         class="form-control"
         id="Name"
         name="name"
