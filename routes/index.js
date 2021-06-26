@@ -27,8 +27,8 @@ module.exports = function (db) {
 
 
   router.get("/", function (req, res, next) {
-    let sql = `select * from projects`;
-    console.log(sql);
+    let sql = `select * from projects order by projectid`;
+    
     db.query(sql, (err, row) => {
       if (err) throw err;
 
@@ -40,8 +40,8 @@ module.exports = function (db) {
 
   router.get("/add", (req, res) => res.render("add"));
   router.post("/add", (req, res) => {
-    let sql = `INSERT INTO bread (nama, berat, tinggi, tanggal, hubungan) VALUES
-     ('${req.body.name}', '${req.body.weight}', '${req.body.height}', '${req.body.date}', '${req.body.status}')`;
+    let sql = `INSERT INTO projects (projectid, name) VALUES ('${req.body.id}', '${req.body.name}')`;
+   
     db.query(sql, (err) => {
       if (err) throw err;
     });
@@ -50,28 +50,30 @@ module.exports = function (db) {
   });
 
   router.get("/delete/:id", (req, res) => {
-    let sql = `DELETE FROM bread WHERE id=${req.params.id}`;
-
-    db.query(sql, (err) => {});
+    let sql = `DELETE FROM projects  WHERE projectid=${req.params.id}`;
+console.log(sql)
+    db.query(sql, (err) => {
+      
+    });
     res.redirect("/");
   });
 
   router.get("/edit/:id", (req, res) => {
-    let sql = `select * from bread where id='${req.params.id}'`;
+    let sql = `select * from projects where projectid=${req.params.id}`;
     console.log(sql);
     db.query(sql, (err, row) => {
       if (err) throw err;
 
       if (row) {
-        res.render("edit", { nama: row.rows[0], moment: moment });
+        res.render("edit", { nama: row.rows[0] });
       }
     });
   });
 
   router.post("/edit/:id", (req, res) => {
-    let sql = `UPDATE bread 
-        SET nama = '${req.body.name}', berat = '${req.body.weight}', tinggi= '${req.body.height}', tanggal = '${req.body.date}', hubungan = '${req.body.status}'
-        WHERE id='${req.params.id}'`;
+    let sql = `UPDATE projects 
+        SET name = '${req.body.name}'
+        WHERE projectid='${req.params.id}'`;
 
     db.query(sql, (err) => {});
 
@@ -80,6 +82,26 @@ module.exports = function (db) {
 
   router.get("/profile", (req, res, next) => {
     res.render("home/form");
+  });
+
+  router.post("/profile:id", (req, res, next) => {
+    let sql = `UPDATE users SET email = '${req.body.email}', password = '${req.body.password}', type = '${req.body.type}'
+        WHERE projectid='${req.params.id}'`;
+        console.log(sql)
+        db.query(sql, (err) => {
+          if (err) throw err;
+        //   sql = `UPDATE projects 
+        // SET role = '${req.body.position}'`;
+        // if (req.body.position > 0) {
+        //   sql += `WHERE projectid='${req.params.id}'`
+        // }
+
+        // db.query(sql, (err) => {
+          // if (err) throw err;
+          res.redirect("/");
+        // });
+      });
+
   });
 
   return router;

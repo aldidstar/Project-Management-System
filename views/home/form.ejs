@@ -4,7 +4,7 @@
 <h1 style="font-size: 50px">Profile</h1>
   <br />
   <div class="mb-3 row">
-    <label for="Email" class="col-sm-2 col-form-label">Email</label>
+    <label for="Email" readonly class="col-sm-2 col-form-label">Email</label>
     <div class="col-sm-10">
       <input
         type="email"
@@ -33,21 +33,21 @@
   <div class="mb-3 row">
     <label for="password" class="col-sm-2 col-form-label">Position</label>
   <div class="col">
-    <input
+    <input 
       class="form-check-input"
       type="radio"
-      name="exampleRadios"
+      name="position"
       id="exampleRadios1"
       value="option1"
-      checked
+      
     />
     <label class="form-check-label" for="exampleRadios1"> Manager </label>
   </div>
   <div class="col">
-    <input
+    <input 
       class="form-check-input"
       type="radio"
-      name="exampleRadios"
+      name="position"
       id="exampleRadios2"
       value="option2"
     />
@@ -56,10 +56,10 @@
     </label>
   </div>
   <div class="col">
-    <input
+    <input 
       class="form-check-input"
       type="radio"
-      name="exampleRadios"
+      name="position"
       id="exampleRadios3"
       value="option3"
     />
@@ -72,11 +72,16 @@
   <div class="mb-3 row">
     <label for="password" class="col-sm-2 col-form-label">Type</label>
   <div class="col">
-    <input type="checkbox" class="form-check-input" id="exampleCheck1" />
+    <input type="checkbox" class="form-check-input" id="exampleCheck1" name="type" />
     <label class="form-check-label" for="exampleCheck1">Fulltime</label>
   </div>
+  
 </div>
   <button type="submit" class="btn btn-primary">Update</button>
+
+  
 </form>
+
+
 
 <%- include('../partials/footer') %>

@@ -17,9 +17,13 @@
           <li class="nav-item">
             <a class="nav-link" href="profile">Profile</a>
           </li>
-          
+        
         </ul>
       </div>
+      <div class="row align-items-end" style="margin-right: 10px;">
+        <a class="btn btn-outline-success" href="login">Sign out</a>
+      
+    </div>
     </div>
   </nav>
 
@@ -66,17 +70,19 @@
   <div class="mb-3 row">
     <label for="Member" class="col-sm-2 col-form-label">Member</label >
     <div class="col-sm-10">
-        <select type="boolean" id="Member" name="member" disabled>
-            <option value="">Choose the member</option>
-            <option value="true">Manager</option>
-            <option value="false">Softaware Developer</option>
-            <option value="false">Quality Assurance</option>
-          </select>
+      <select class="form-select" aria-label="Default select example" id="Member" name="member" disabled>
+        <option selected>Open this select menu</option>
+        <option value="1">Manager</option>
+        <option value="2">Software Developer</option>
+        <option value="3">Quality Assurance</option>
+      </select>
+          
       
     </div>
   </div>
-
   <button type="submit" class="btn btn-success">Search</button>
+
+  
   
 
   <br /><br /><br /><br />
@@ -118,15 +124,15 @@
       <td><%= item.name %></td>
       
       <td>
-        <a class="btn btn-success" href="/edit/">edit</a>
-        <a class="btn btn-danger" href="/delete/">delete</a>
+        <a class="btn btn-success" href="/edit/<%= item.projectid%>">edit</a>
+        <a class="btn btn-danger" href="/delete/<%= item.projectid%>">delete</a>
       </td>
     </tr>
     <% }) %>
   </table>
 
  
-  <a class="btn btn-primary" href="#"> Add</a>
+  <a class="btn btn-primary" href="add"> Add</a>
 
   <script>
     function myFunction1() {

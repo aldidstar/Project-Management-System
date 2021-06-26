@@ -1,0 +1,30 @@
+<%- include('partials/header') %>
+<form action="" method="post">
+  <h1>EDIT DATA</h1>
+  <div class="mb-3 row">
+    <label for="Name" class="col-sm-2 col-form-label">Name</label>
+    <div class="col-sm-10">
+      <input
+        type="text"
+        value="<%= nama.name %>"
+        class="form-control"
+        id="Name"
+        name="name"
+        placeholder="Enter your name"
+        
+      />
+    </div>
+  </div>
+  
+  
+
+
+  <button type="submit" class="btn btn-primary">Update
+  </button>
+ 
+  <a class="btn btn-warning" href="/">Back</a>
+ 
+  
+</form>
+  
+<%- include('partials/footer') %>
