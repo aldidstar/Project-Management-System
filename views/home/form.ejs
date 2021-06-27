@@ -72,13 +72,16 @@
   </div>
 </div>
 
-  <div class="mb-3 row">
-    <label for="password" class="col-sm-2 col-form-label">Type</label>
-  <div class="col">
-    <input type="checkbox" class="form-check-input" id="exampleCheck1" name="type" value="<%= nama.type %>"/>
-    <label class="form-check-label" for="exampleCheck1">Fulltime</label>
+<div class="mb-3 row">
+  <label for="Type" class="col-sm-2 col-form-label">Type</label>
+  <div class="col-sm-10">
+      <select type="boolean" id="Type" name="type" >
+          <option value="">Choose your choice</option>
+          <option value="full time">full time</option>
+          <option value="part time">part time</option>
+        </select>
+    
   </div>
-  
 </div>
   <button type="submit" class="btn btn-primary">Update</button>
 

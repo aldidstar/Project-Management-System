@@ -67,7 +67,12 @@
       </label>
     </div>
     <button  class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
-   
+    <% if(info.length > 0) { %>
+    <div class="alert alert-danger" role="alert">
+      
+      <%= info %>
+    </div>
+    <% } %>
   </form>
 </main>
 

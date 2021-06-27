@@ -2,6 +2,8 @@
 
 <form action="" method="GET">
   <input type="hidden" name="page" value="1" />
+
+ 
   
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark" >
     <div class="container-fluid">
@@ -15,7 +17,7 @@
             <a  class="nav-link active" aria-current="page" href="#">Projects</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="profile">Profile</a>
+            <a class="nav-link" href="profile<%= nama.email %>">Profile</a>
           </li>
         
         </ul>
@@ -92,13 +94,13 @@
   <div class="mb-3 row">
     <label for="password" class="col-sm-2 col-form-label">Type</label>
     <div class="col">
-      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault">
+      <input onclick="myFunction4()" class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
       <label class="form-check-label" for="flexCheckDefault">
         ID
       </label>
     </div>
     <div class="col">
-      <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
+      <input onclick="myFunction5()" class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked>
       <label class="form-check-label" for="flexCheckChecked">
         Name
       </label>
@@ -114,14 +116,14 @@
 
   <table class="table table-striped">
     <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Action</th>
+      <th onclick="myFunction4()" id="checkid">ID</th>
+      <th onclick="myFunction5()" id="checkname">Name</th>
+      <th >Action</th>
     </tr>
-    <% nama.forEach((item, index) => { %>
+    <%  nama.forEach((item, index) => { %>
     <tr class="genap">
-      <td><%= item.projectid %></td>
-      <td><%= item.name %></td>
+      <td onclick="myFunction4()" id="cekid"><%= item.projectid %> </td>
+      <td onclick="myFunction5()" id="cekname"><%= item.name %></td>
       
       <td>
         <a class="btn btn-success" href="/edit/<%= item.projectid%>">edit</a>
@@ -165,23 +167,27 @@
     }
 
     function myFunction4() {
-      if (document.getElementById("myCheck4").checked == true) {
-        document.getElementById("start").disabled = false;
-        document.getElementById("end").disabled = false;
+      
+      if (document.getElementById("flexCheckDefault").checked == true) {
+        document.getElementById("cekid").hidden = false;
+        document.getElementById("checkid").hidden = false;
       }
       else {
-        document.getElementById("start").disabled = true;
-        document.getElementById("end").disabled = true;
+        document.getElementById("checkid").hidden = true;
+        
+        document.getElementById("cekid").hidden = true;
       }
       
     }
 
     function myFunction5() {
-      if (document.getElementById("myCheck5").checked == true) {
-        document.getElementById("Status").disabled = false;
+      if (document.getElementById("flexCheckChecked").checked == true) {
+        document.getElementById("checkname").hidden = false;
+        document.getElementById("cekname").hidden = false;
       }
       else {
-        document.getElementById("Status").disabled = true;
+        document.getElementById("checkname").hidden = true;
+        document.getElementById("cekname").hidden = true;
       }
       
     }
