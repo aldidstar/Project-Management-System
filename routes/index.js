@@ -30,7 +30,7 @@ module.exports = function (db) {
           function (err, result) {
             if (result) {
               req.session.user = row.rows[0];
-              res.redirect("/");
+              res.redirect("/project");
             } else {
               req.flash("info", "email / password salah!");
               res.redirect("/login");
@@ -48,7 +48,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/", helpers.isLoggedIn, function (req, res, next) {
+  router.get("/project", helpers.isLoggedIn, function (req, res, next) {
     const { id, name } = req.query;
     const url = req.url == "/" ? "/?page=1" : req.url;
 
@@ -64,7 +64,7 @@ module.exports = function (db) {
     // if (member) {
     //   params.push(`projectid = ${member}`);
     // }
-    let sql = `select * from projects `;
+    let sql = `select * from projects order by projectid`;
     if (params.length > 0) {
       sql += ` where ${params.join(" and ")}`;
     }
@@ -77,6 +77,9 @@ module.exports = function (db) {
       }
     });
   });
+  // router.post("/", helpers.isLoggedIn, (req, res) => {
+  //   let sql = `INSERT INTO users (projectid, projectname) VALUES ('${req.body.idpro}', '${req.body.namepro}')`;
+  // });
 
   router.get("/add", helpers.isLoggedIn, (req, res) => res.render("add"));
   router.post("/add", helpers.isLoggedIn, (req, res) => {
