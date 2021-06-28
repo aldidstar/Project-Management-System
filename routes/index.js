@@ -77,9 +77,9 @@ module.exports = function (db) {
       }
     });
   });
-  // router.post("/", helpers.isLoggedIn, (req, res) => {
-  //   let sql = `INSERT INTO users (projectid, projectname) VALUES ('${req.body.idpro}', '${req.body.namepro}')`;
-  // });
+  router.post("/project", helpers.isLoggedIn, (req, res) => {
+    let sql = `INSERT INTO users (projectid, projectname) VALUES ('${req.body.idpro}', '${req.body.namepro}')`;
+  });
 
   router.get("/add", helpers.isLoggedIn, (req, res) => res.render("add"));
   router.post("/add", helpers.isLoggedIn, (req, res) => {
