@@ -114,20 +114,23 @@
 
   
 
+
   
 
   <table class="table table-striped">
     <tr>
       <th onclick="myFunction4()" id="checkid">ID</th>
       <th onclick="myFunction5()" id="checkname">Name</th>
+      <th onclick="myFunction5()" id="checkname">Member</th>
       <th >Action</th>
     </tr>
     <%  nama.forEach((item, index) => { %>
     <tr class="genap">
       
-      <td id="cekid"><%= item.projectid %> </td>
+      <td id="cekid"><%= item.userid %> </td>
      
       <td onclick="myFunction5()" id="cekname"><%= item.name %></td>
+      <td onclick="myFunction5()" id="cekname"><%= item.firstname %></td>
       
       <td>
         <a class="btn btn-success" href="/edit/<%= item.projectid%>">edit</a>
