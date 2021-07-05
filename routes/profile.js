@@ -7,6 +7,7 @@ const helpers = require("../helpers/util");
 
 module.exports = function (db) {
   router.get("/", helpers.isLoggedIn, (req, res, next) => {
+    const {position, type} = req.query;
     let sql = `select * from users where email= '${req.session.user.email}'`;
     // let sql = `select * from users `;
     console.log(sql);
@@ -14,7 +15,7 @@ module.exports = function (db) {
       if (err) throw err;
 
       if (row) {
-        res.render("profile/profile", { nama: row.rows[0] });
+        res.render("profile/profile", { nama: row.rows[0], query: req.query });
       }
     });
   });
