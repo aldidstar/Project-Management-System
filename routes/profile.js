@@ -7,7 +7,8 @@ const helpers = require("../helpers/util");
 
 module.exports = function (db) {
   router.get("/", helpers.isLoggedIn, (req, res, next) => {
-    const {position, type} = req.query;
+    const {position} = req.query;
+    var type = req.query.type
     let sql = `select * from users where email= '${req.session.user.email}'`;
     // let sql = `select * from users `;
     console.log(sql);
@@ -15,7 +16,7 @@ module.exports = function (db) {
       if (err) throw err;
 
       if (row) {
-        res.render("profile/profile", { nama: row.rows[0], query: req.query });
+        res.render("profile/profile", { nama: row.rows[0], query: req.query, type });
       }
     });
   });
@@ -38,6 +39,13 @@ module.exports = function (db) {
       });
     });
   });
+
+  router.get("/logout", function (req, res, next) {
+    req.session.destroy(function (err) {
+      res.redirect("/");
+    });
+  });
+
 
   return router;
 };

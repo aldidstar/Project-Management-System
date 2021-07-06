@@ -67,7 +67,7 @@
       type="radio"
       name="position"
       id="exampleRadios1"
-      value="Manager"<%= query.position == 'Manager' ? ' checked' : '' %>
+      value="Manager"<%= nama.position == 'Manager' ? ' checked' : '' %>
       
       
     />
@@ -79,7 +79,7 @@
       type="radio"
       name="position"
       id="exampleRadios2"
-      value="Software Developer"<%= query.position == 'Software Developer' ? ' checked' : '' %>
+      value="Software Developer"<%= nama.position == 'Software Developer' ? ' checked' : '' %>
     />
     <label class="form-check-label" for="exampleRadios2">
       Software Developer
@@ -91,7 +91,7 @@
       type="radio"
       name="position"
       id="exampleRadios3"
-      value="Quality Assurance" <%= query.position == 'Quality Assurance' ? ' checked' : '' %>
+      value="Quality Assurance" <%= nama.position == 'Quality Assurance' ? ' checked' : '' %>
     />
     <label class="form-check-label" for="exampleRadios3">
       Quality Assurance
@@ -104,8 +104,8 @@
   <div class="col-sm-10">
       <select type="boolean" id="Type" name="type" >
           <option value="">Choose your choice</option>
-          <option value="full time"<%= query.type == 'full time' ? ' selected' : '' %>>full time</option>
-          <option value="part time"<%= query.type == 'part time' ? ' selected' : '' %>>part time</option>
+          <option value="full time"<%= nama.type == 'full time' ? ' selected' : '' %>>full time</option>
+          <option value="part time"<%= nama.type == 'part time' ? ' selected' : '' %>>part time</option>
         </select>
     
   </div>

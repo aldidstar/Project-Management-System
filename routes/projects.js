@@ -16,7 +16,7 @@ module.exports = function (db) {
     }
 
     if (id) {
-      params.push(`projectid = ${id}`);
+      params.push(`members.userid = ${id}`);
     }
 
     // if (member) {
@@ -26,6 +26,7 @@ module.exports = function (db) {
     if (params.length > 0) {
       sql += ` where ${params.join(" and ")}`;
     }
+   
     console.log(sql);
     db.query(sql, (err, row) => {
       if (err) throw err;
@@ -62,7 +63,6 @@ module.exports = function (db) {
 
   router.get("/delete/:id", (req, res) => {
     let sql = `DELETE FROM projects  WHERE projectid=${req.params.id}`;
-    console.log(sql);
     db.query(sql, (err) => {});
     res.redirect("/");
   });
@@ -88,6 +88,13 @@ module.exports = function (db) {
 
     res.redirect("/");
   });
+
+  router.get("/logout", function (req, res, next) {
+    req.session.destroy(function (err) {
+      res.redirect("login");
+    });
+  });
+
 
   return router;
 };
