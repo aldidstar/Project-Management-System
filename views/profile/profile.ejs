@@ -28,6 +28,12 @@
 
   <br>
 <h1 style="font-size: 50px">Profile</h1>
+<% if(info.length > 0) { %>
+  <div class="alert alert-primary" role="alert">
+    
+    <%= info %>
+  </div>
+  <% } %>
   <br />
   <div class="mb-3 row">
     <label for="Email"  class="col-sm-2 col-form-label">Email</label>

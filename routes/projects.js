@@ -16,38 +16,37 @@ module.exports = function (db) {
     }
 
     if (id) {
-      params.push(`members.userid = ${id}`);
+      params.push(`projects.projectid = ${id}`);
     }
 
     // if (member) {
     //   params.push(`projectid = ${member}`);
     // }
-    let sql = `select members.userid, projects.name, users.firstname from ((members Inner JOIN projects ON members.projectid = projects.projectid ) Inner JOIN users ON members.userid = users.userid)`;
+    let sql = `select projects.projectid, projects.name, ARRAY_AGG (
+      firstname ORDER BY firstname) members from members Inner JOIN projects USING (projectid) Inner JOIN users USING (userid) GROUP BY projects.projectid, projects.name ORDER BY projectid`;
     if (params.length > 0) {
       sql += ` where ${params.join(" and ")}`;
     }
-   
+
     console.log(sql);
     db.query(sql, (err, row) => {
       if (err) throw err;
-
-      if (row) {
-        res.render("projects/projects", { nama: row.rows, query: req.query });
-      }
+      console.log(sql);
+      db.query(`select option from users where email = $1`, [req.session.user.email],(err, options) => { 
+        if (err) throw err;
+        
+        res.render("projects/projects", { nama: row.rows, query: req.query, options: options.rows[0].option });
+      }) 
+      
     });
   });
   router.post("/", helpers.isLoggedIn, (req, res) => {
-    let sql = `INSERT INTO users (projectid, projectname) VALUES (${req.body.idpro}, '${req.body.namepro}')`;
-    db.query(sql, (err) => {
+    const {projectid, name, members} = req.body
+    db.query(`update users set option = $1 where email = $2 `, [req.body, req.session.user.email], (err,data) => {
       if (err) throw err;
-      let sql = `select * from projects order by projectid`;
-      console.log(sql);
-      db.query(sql, (err) => {
-        if (err) throw err;
-      });
-
-      res.redirect("/");
+      
     });
+    res.redirect("/projects");
   });
 
   router.get("/add", helpers.isLoggedIn, (req, res) => res.render("add"));
@@ -94,7 +93,6 @@ module.exports = function (db) {
       res.redirect("login");
     });
   });
-
 
   return router;
 };

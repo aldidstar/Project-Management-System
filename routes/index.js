@@ -17,11 +17,11 @@ module.exports = function (db) {
       (err, row) => {
         if (err) {
           req.flash("info", "Salah nihh!");
-          res.redirect("/login");
+          res.redirect("/");
         }
         if (row.rows.length == 0) {
           req.flash("info", "email / password salah!");
-          res.redirect("/login");
+          res.redirect("/");
         }
 
         bcrypt.compare(
@@ -33,7 +33,7 @@ module.exports = function (db) {
               res.redirect("/projects");
             } else {
               req.flash("info", "email / password salah!");
-              res.redirect("/login");
+              res.redirect("/");
             }
           }
         );

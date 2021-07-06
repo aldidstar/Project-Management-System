@@ -16,7 +16,7 @@ module.exports = function (db) {
       if (err) throw err;
 
       if (row) {
-        res.render("profile/profile", { nama: row.rows[0], query: req.query, type });
+        res.render("profile/profile", { nama: row.rows[0], query: req.query, type, info: req.flash("info") });
       }
     });
   });
@@ -34,6 +34,7 @@ module.exports = function (db) {
         }
         console.log(sql);
         db.query(sql, (err) => {
+          req.flash("info", `Data ${req.session.user.firstname} telah di update`);
           res.redirect("/profile");
         });
       });
