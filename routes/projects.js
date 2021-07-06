@@ -7,37 +7,41 @@ const helpers = require("../helpers/util");
 
 module.exports = function (db) {
   router.get("/", helpers.isLoggedIn, function (req, res, next) {
-    const { id, name } = req.query;
+    const { id, name, member } = req.query;
     const url = req.url == "/" ? "/?page=1" : req.url;
 
     let params = [];
     if (name) {
-      params.push(`name ilike '%${name}%'`);
+      params.push(`projects.name ilike '%${name}%'`);
     }
 
     if (id) {
       params.push(`projects.projectid = ${id}`);
     }
 
-    // if (member) {
-    //   params.push(`projectid = ${member}`);
-    // }
+    if (member) {
+      params.push(`members.userid = ${member}`);
+    }
     let sql = `select projects.projectid, projects.name, ARRAY_AGG (
-      firstname ORDER BY firstname) members from members Inner JOIN projects USING (projectid) Inner JOIN users USING (userid) GROUP BY projects.projectid, projects.name ORDER BY projectid`;
+      firstname ORDER BY firstname) members from members Inner JOIN projects USING (projectid) Inner JOIN users USING (userid)`;
     if (params.length > 0) {
       sql += ` where ${params.join(" and ")}`;
     }
+    sql +=  ` GROUP BY projects.projectid, projects.name ORDER BY projectid`;
 
     console.log(sql);
     db.query(sql, (err, row) => {
       if (err) throw err;
+
       console.log(sql);
       db.query(`select option from users where email = $1`, [req.session.user.email],(err, options) => { 
         if (err) throw err;
-        
-        res.render("projects/projects", { nama: row.rows, query: req.query, options: options.rows[0].option });
+
+         db.query(`select * from users`,(err, memberss) => { 
+        if (err) throw err;
+        res.render("projects/projects", { nama: row.rows, query: req.query, options: options.rows[0].option, memberss: memberss.rows });
       }) 
-      
+    });
     });
   });
   router.post("/", helpers.isLoggedIn, (req, res) => {

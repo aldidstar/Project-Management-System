@@ -73,20 +73,22 @@
     <label for="Member" class="col-sm-2 col-form-label">Member</label>
     <div class="col-sm-10">
       <select
-        class="form-select"
-        aria-label="Default select example"
-        id="Member"
-        name="member"
-        disabled
+      class="form-select"
+      aria-label="Default select example"
+      id="Member"
+      name="member"
+      value="<%= query.member %>"
+      disabled
       >
-        <option selected>Open this select menu</option>
-        <option value="1">Manager</option>
-        <option value="2">Software Developer</option>
-        <option value="3">Quality Assurance</option>
+      <option selected>Open this select menu</option>
+      <% memberss.forEach((item, index) => { %>
+        <option value="<%= item.userid %>" ><%= item.firstname %></option>
+        <% }) %>
       </select>
     </div>
   </div>
   <button type="submit" class="btn btn-success">Search</button>
+  <a class="btn btn-warning" href="/projects">Reset</a>
 </form>
 
 <br /><br /><br /><br />
@@ -127,7 +129,7 @@
     </div>
   </div>
   <button type="submit" class="btn btn-success">Apply</button>
-  <a class="btn btn-warning" href="/projects">Reset</a>
+  
 </form>
 <br /><br /><br /><br />
 
