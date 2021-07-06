@@ -8,7 +8,10 @@ const helpers = require("../helpers/util");
 module.exports = function (db) {
   router.get("/", helpers.isLoggedIn, function (req, res, next) {
     const { id, name, member } = req.query;
-    const url = req.url == "/" ? "/?page=1" : req.url;
+    const url = req.url == "/" ? "/projects/?page=1" : req.url;
+    const page = parseInt(req.query.page || 1);
+    const limit = 1;
+    const offset = (page - 1) * limit;
 
     let params = [];
     if (name) {
@@ -22,34 +25,66 @@ module.exports = function (db) {
     if (member) {
       params.push(`members.userid = ${member}`);
     }
+
+    let sql = `select count(*) as total from users `;
+      if (params.length > 0) {
+        sql += ` where ${params.join(" and ")}`;
+      }
+      db.query(sql, (err, data) => {
+        if (err) {
+          return res.send(err);
+        }
+        const total = data.rows[0].total;
+        const pages = Math.ceil(total / limit);
     let sql = `select projects.projectid, projects.name, ARRAY_AGG (
       firstname ORDER BY firstname) members from members Inner JOIN projects USING (projectid) Inner JOIN users USING (userid)`;
     if (params.length > 0) {
       sql += ` where ${params.join(" and ")}`;
     }
-    sql +=  ` GROUP BY projects.projectid, projects.name ORDER BY projectid`;
+    sql += ` GROUP BY projects.projectid, projects.name ORDER BY projectid`;
 
     console.log(sql);
     db.query(sql, (err, row) => {
       if (err) throw err;
+      
+        console.log(sql);
+        db.query(
+          `select option from users where email = $1`,
+          [req.session.user.email],
+          (err, options) => {
+            if (err) throw err;
+            let sql = `select * from users`;
+            if (params.length > 0) {
+              sql += `where ${params.join(" and ")}`;
+            }
+            sql += ` limit $1 offset $2`;
 
-      console.log(sql);
-      db.query(`select option from users where email = $1`, [req.session.user.email],(err, options) => { 
-        if (err) throw err;
-
-         db.query(`select * from users`,(err, memberss) => { 
-        if (err) throw err;
-        res.render("projects/projects", { nama: row.rows, query: req.query, options: options.rows[0].option, memberss: memberss.rows });
-      }) 
-    });
+            db.query(sql, [limit, offset], (err, memberss) => {
+              if (err) throw err;
+              res.render("projects/projects", {
+                nama: row.rows,
+                query: req.query,
+                options: options.rows[0].option,
+                memberss: memberss.rows,
+                page,
+                pages,
+                url
+              });
+            });
+          }
+        );
+      });
     });
   });
   router.post("/", helpers.isLoggedIn, (req, res) => {
-    const {projectid, name, members} = req.body
-    db.query(`update users set option = $1 where email = $2 `, [req.body, req.session.user.email], (err,data) => {
-      if (err) throw err;
-      
-    });
+    const { projectid, name, members } = req.body;
+    db.query(
+      `update users set option = $1 where email = $2 `,
+      [req.body, req.session.user.email],
+      (err, data) => {
+        if (err) throw err;
+      }
+    );
     res.redirect("/projects");
   });
 
