@@ -8,11 +8,10 @@ const helpers = require("../helpers/util");
 module.exports = function (db) {
   router.get("/", helpers.isLoggedIn, function (req, res, next) {
     const { id, name, member } = req.query;
-    const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}` ;
-    console.log(url)
-      const page = parseInt(req.query.page || 1);
-      const limit = 1;
-      const offset = (page - 1) * limit;
+    // const url = req.url == "/" ? "/projects/?page=1" : req.url;
+    // const page = parseInt(req.query.page || 1);
+    // const limit = 1;
+    // const offset = (page - 1) * limit;
 
     let params = [];
     if (name) {
@@ -36,57 +35,34 @@ module.exports = function (db) {
     sql += ` GROUP BY projects.projectid, projects.name ORDER BY projectid`;
 
     console.log(sql);
-    db.query(sql, (err, rows) => {
+    db.query(sql, (err, row) => {
       if (err) throw err;
-     
-      let sql = `select count(*) as total from users `;
       
       
-      if (params.length > 0) {
-        sql += ` where ${params.join(" and ")}`;
-      }
-      db.query(sql, (err, data) => {
-        if (err) {
-          return res.send(err);
-        }
-        const total = data.rows[0].total;
-        const pages = Math.ceil(total / limit);
-      
-        // console.log(sql);
-        let sql = `select * from users`;
-        if (params.length > 0) {
-          sql += `where ${params.join(" and ")}`;
-        }
-        sql += ` limit $1 offset $2`;
-        
-        db.query(sql, [limit, offset], (err, row) => {
-          if (err) throw err;
-          let sql = `select * from users`;
-        
-
-          db.query(sql, (err, memberss) => {
+        console.log(sql);
+        db.query(
+          `select option from users where email = $1`,
+          [req.session.user.email],
+          (err, options) => {
             if (err) throw err;
+            let sql = `select * from users`;
+        
 
-          db.query(
-            `select option from users where email = $1`,
-            [req.session.user.email],
-            (err, options) => {
+            db.query(sql, (err, memberss) => {
               if (err) throw err;
-          res.render("projects/projects", {
-            nama: rows.rows,
-            namas: row.rows,
+              res.render("projects/projects", {
+                nama: row.rows,
                 query: req.query,
                 options: options.rows[0].option,
                 memberss: memberss.rows,
-                page,
-                pages,
-                url
+                // page,
+                // pages,
+                // url
               });
-            });
+            
           }
         );
       });
-    });
     });
   });
   router.post("/", helpers.isLoggedIn, (req, res) => {
@@ -140,8 +116,11 @@ module.exports = function (db) {
     res.redirect("/");
   });
 
-
-
+  router.get("/logout", function (req, res, next) {
+    req.session.destroy(function (err) {
+      res.redirect("login");
+    });
+  });
 
   return router;
 };

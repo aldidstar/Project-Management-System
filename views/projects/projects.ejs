@@ -34,6 +34,7 @@
   </nav>
 
   <br />
+  
   <h1>Projects</h1>
 
   <input onclick="myFunction1()" type="checkbox" id="myCheck1" />
@@ -77,12 +78,12 @@
       aria-label="Default select example"
       id="Member"
       name="member"
-      value="<%= query.member %>"
+     
       disabled
       >
       <option selected>Open this select menu</option>
       <% memberss.forEach((item, index) => { %>
-        <option value="<%= item.userid %>" ><%= item.firstname %></option>
+        <option value="<%= item.userid %>" <%= query.member == item.userid ? ' selected' : '' %>><%= item.firstname %></option>
         <% }) %>
       </select>
     </div>
@@ -158,7 +159,7 @@
     <td  id="cekname"><%= item.members %></td>
     <% } %>
     <td>
-      <a class="btn btn-success" href="/edit/<%= item.projectid%>">edit</a>
+      <a class="btn btn-success" href="/projects/edit/<%= item.projectid%>">edit</a>
       <a class="btn btn-danger" href="/delete/<%= item.projectid%>">delete</a>
     </td>
   </tr>
@@ -178,7 +179,7 @@
     <li class="page-item <%= page == i ? 'active' : '' %>"><a class="page-link" href="<%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %></a></li>
     <% } %>
   </li>
-    <li class="page-item active" aria-current="page"></li>
+   
     
     <li class="page-item">
       <% if(page <= pages - 1) { %>
@@ -191,7 +192,7 @@
 </nav>
 <br>
 
-<a class="btn btn-primary" href="add"> Add</a>
+<a class="btn btn-primary" href="/projects/add"> Add</a>
 
 <script>
   function myFunction1() {
