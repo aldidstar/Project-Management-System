@@ -16,13 +16,28 @@
     </div>
   </div>
   
+  <div class="mb-3 row">
+    <label for="password" class="col-sm-2 col-form-label">Member</label>
+    <div class="col-sm-10">
+      <% memberss.forEach((item, index) => { %>
+      <input
+        name="projectid"
+        class="form-check-input"
+        type="checkbox"
+        id="flexCheckDefault"
+        value="<%= item.userid %>"><%= item.firstname %>
+      
+      <% }) %>
+      
+    </div>
+  </div>
   
 
 
   <button type="submit" class="btn btn-primary">Update
   </button>
  
-  <a class="btn btn-warning" href="/">Back</a>
+  <a class="btn btn-warning" href="/projects">Back</a>
  
   
 </form>
