@@ -77,7 +77,7 @@ module.exports = function (db) {
     res.redirect("/projects");
   });
 
-  router.get("/add", helpers.isLoggedIn, (req, res) => res.render("add"));
+  router.get("/add", helpers.isLoggedIn, (req, res) => res.render("./add"));
   router.post("/add", helpers.isLoggedIn, (req, res) => {
     let sql = `INSERT INTO projects (projectid, name) VALUES ('${req.body.id}', '${req.body.name}')`;
 
@@ -106,7 +106,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/edit/:id", (req, res) => {
+  router.post("./edit/:id", (req, res) => {
     let sql = `UPDATE projects 
         SET name = '${req.body.name}'
         WHERE projectid='${req.params.id}'`;
@@ -116,11 +116,8 @@ module.exports = function (db) {
     res.redirect("/");
   });
 
-  router.get("/logout", function (req, res, next) {
-    req.session.destroy(function (err) {
-      res.redirect("login");
-    });
-  });
+  
+
 
   return router;
 };
