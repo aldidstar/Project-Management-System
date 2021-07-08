@@ -29,9 +29,9 @@ const isDevelopment = false
 const { Pool } = require('pg')
 let pool = null
 if (isDevelopment) {
-  pool = new Pool(developmentDB)
-} else {
   pool = new Pool(productionDB)
+} else {
+  pool = new Pool(developmentDB)
 }
 
 var indexRouter = require('./routes/index')(pool);
