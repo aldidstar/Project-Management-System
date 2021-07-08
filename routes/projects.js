@@ -26,17 +26,21 @@ module.exports = function (db) {
       params.push(`members.userid = ${member}`);
     }
 
-    let sql = `select count(*) as total from projects `;
+    let sqlcount = `select projects.projectid, projects.name, ARRAY_AGG (
+      firstname ORDER BY firstname) members from members Inner JOIN projects USING (projectid) Inner JOIN users USING (userid)`;
 
     if (params.length > 0) {
-      sql += `where ${params.join(" and ")}`;
+      sqlcount += `where ${params.join(" and ")}`;
     }
-    console.log(sql);
-    db.query(sql, (err, data) => {
+    sqlcount += ` GROUP BY projects.projectid, projects.name ORDER BY projectid`;
+
+    console.log(sqlcount);
+    db.query(sqlcount, (err, data) => {
       if (err) {
         return res.send(err);
       }
-      const total = data.rows[0].total;
+      
+      const total = data.rows.length;
       const pages = Math.ceil(total / limit);
       let sql = `select * from users`;
 
@@ -88,9 +92,9 @@ module.exports = function (db) {
       [req.body, req.session.user.email],
       (err, data) => {
         if (err) throw err;
+        res.redirect("/projects");
       }
     );
-    res.redirect("/projects");
   });
 
   router.get("/add", helpers.isLoggedIn, (req, res) => {

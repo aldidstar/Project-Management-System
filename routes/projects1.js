@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-// var moment = require("moment");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const helpers = require("../helpers/util");
@@ -11,7 +10,7 @@ module.exports = function (db) {
     const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}`;
     console.log(url);
     const page = parseInt(req.query.page || 1);
-    const limit = 2;
+    const limit = 3;
     const offset = (page - 1) * limit;
 
     let params = [];
@@ -27,17 +26,21 @@ module.exports = function (db) {
       params.push(`members.userid = ${member}`);
     }
 
-    let sql = `select count(*) as total from projects `;
+    let sqlcount = `select projects.projectid, projects.name, ARRAY_AGG (
+      firstname ORDER BY firstname) members from members Inner JOIN projects USING (projectid) Inner JOIN users USING (userid)`;
 
     if (params.length > 0) {
-      sql += `where ${params.join(" and ")}`;
+      sqlcount += `where ${params.join(" and ")}`;
     }
-    console.log(sql);
-    db.query(sql, (err, data) => {
+    sqlcount += ` GROUP BY projects.projectid, projects.name ORDER BY projectid`;
+
+    console.log(sqlcount);
+    db.query(sqlcount, (err, data) => {
       if (err) {
         return res.send(err);
       }
-      const total = data.rows[0].total;
+      
+      const total = data.rows.length;
       const pages = Math.ceil(total / limit);
       let sql = `select * from users`;
 
@@ -89,26 +92,50 @@ module.exports = function (db) {
       [req.body, req.session.user.email],
       (err, data) => {
         if (err) throw err;
+        res.redirect("/projects");
       }
     );
-    res.redirect("/projects");
   });
 
-  router.get("/add", helpers.isLoggedIn, (req, res) => res.render("add"));
-  router.post("/add", helpers.isLoggedIn, (req, res) => {
-    let sql = `INSERT INTO projects (projectid, name) VALUES ('${req.body.id}', '${req.body.name}')`;
+  router.get("/add", helpers.isLoggedIn, (req, res) => {
+    let sql = `select * from users`;
 
+    db.query(sql, (err, memberss) => {
+      if (err) throw err;
+      res.render("projects/add", {
+        memberss: memberss.rows,
+      });
+    });
+  });
+  router.post("/add", helpers.isLoggedIn, (req, res) => {
+    let sql = `INSERT INTO projects (name) VALUES ('${req.body.name}')`;
+    console.log(sql);
     db.query(sql, (err) => {
       if (err) throw err;
-    });
 
-    res.redirect("/");
+      let sql = `INSERT INTO members (userid,role,projectid) VALUES ('${req.body.userid}', '${req.body.position}', '${req.body.id}')`;
+
+      db.query(sql, (err) => {
+        if (err) throw err;
+        res.redirect("/projects");
+      });
+    });
   });
 
   router.get("/delete/:id", (req, res) => {
-    let sql = `DELETE FROM projects  WHERE projectid=${req.params.id}`;
-    db.query(sql, (err) => {});
-    res.redirect("/");
+    let sql = `DELETE FROM members WHERE projectid=${req.params.id}`;
+    console.log(sql);
+    db.query(sql, (err) => {
+      if (err) throw err;
+
+      let sql = `DELETE FROM projects WHERE projectid=${req.params.id}`;
+      console.log(sql);
+      db.query(sql, (err) => {
+        if (err) throw err;
+      });
+
+      res.redirect("/projects");
+    });
   });
 
   router.get("/edit/:id", (req, res) => {
@@ -116,22 +143,42 @@ module.exports = function (db) {
     console.log(sql);
     db.query(sql, (err, row) => {
       if (err) throw err;
+      let sql = `select * from users`;
 
-      if (row) {
-        res.render("edit", { nama: row.rows[0] });
-      }
+      db.query(sql, (err, memberss) => {
+        if (err) throw err;
+        if (row) {
+          res.render("projects/edit", {
+            nama: row.rows[0],
+            memberss: memberss.rows,
+          });
+        }
+      });
     });
   });
 
   router.post("/edit/:id", (req, res) => {
-    let sql = `UPDATE projects 
+    let sql = `DELETE FROM members WHERE projectid=${req.params.id}`;
+    console.log(sql);
+    db.query(sql, (err) => {
+      if (err) throw err;
+
+      let sql = `UPDATE projects 
         SET name = '${req.body.name}'
         WHERE projectid='${req.params.id}'`;
 
-    db.query(sql, (err) => {});
+      db.query(sql, (err) => {
+        if (err) throw err;
+        let sql = `INSERT INTO members (userid,role,projectid) VALUES ('${req.body.userid}', 'Software Developer', '${req.params.id}')`;
 
-    res.redirect("/");
+        db.query(sql, (err) => {
+          if (err) throw err;
+          res.redirect("/projects");
+      });
+
+    });
   });
+});
 
   return router;
 };

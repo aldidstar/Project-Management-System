@@ -10,3 +10,7 @@ a {
 #tes{
   background-color: black;
 }
+
+.d-flex .btn btn-outline-primary{
+  height: 20px;
+}
