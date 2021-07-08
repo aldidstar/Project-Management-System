@@ -1,6 +1,5 @@
 var express = require("express");
 var router = express.Router();
-// var moment = require("moment");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const helpers = require("../helpers/util");
@@ -105,9 +104,8 @@ module.exports = function (db) {
     });
   });
   router.post("/add", helpers.isLoggedIn, (req, res) => {
-    
     let sql = `INSERT INTO projects (name) VALUES ('${req.body.name}')`;
-    console.log(sql)
+    console.log(sql);
     db.query(sql, (err) => {
       if (err) throw err;
 
@@ -122,17 +120,17 @@ module.exports = function (db) {
 
   router.get("/delete/:id", (req, res) => {
     let sql = `DELETE FROM members WHERE projectid=${req.params.id}`;
-    console.log(sql)
+    console.log(sql);
     db.query(sql, (err) => {
       if (err) throw err;
-      
+
       let sql = `DELETE FROM projects WHERE projectid=${req.params.id}`;
-      console.log(sql)
+      console.log(sql);
       db.query(sql, (err) => {
         if (err) throw err;
-    });
-      
-    res.redirect("/projects");
+      });
+
+      res.redirect("/projects");
     });
   });
 
@@ -145,22 +143,38 @@ module.exports = function (db) {
 
       db.query(sql, (err, memberss) => {
         if (err) throw err;
-      if (row) {
-        res.render("projects/edit", { nama: row.rows[0],memberss: memberss.rows, });
-      }
+        if (row) {
+          res.render("projects/edit", {
+            nama: row.rows[0],
+            memberss: memberss.rows,
+          });
+        }
+      });
     });
   });
-});
 
   router.post("/edit/:id", (req, res) => {
-    let sql = `UPDATE projects 
+    let sql = `DELETE FROM members WHERE projectid=${req.params.id}`;
+    console.log(sql);
+    db.query(sql, (err) => {
+      if (err) throw err;
+
+      let sql = `UPDATE projects 
         SET name = '${req.body.name}'
         WHERE projectid='${req.params.id}'`;
 
-    db.query(sql, (err) => {});
+      db.query(sql, (err) => {
+        if (err) throw err;
+        let sql = `INSERT INTO members (userid,role,projectid) VALUES ('${req.body.userid}', 'Software Developer', '${req.params.id}')`;
 
-    res.redirect("/projects");
+        db.query(sql, (err) => {
+          if (err) throw err;
+          res.redirect("/projects");
+      });
+
+    });
   });
+});
 
   return router;
 };
