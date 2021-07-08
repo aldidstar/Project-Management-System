@@ -13,7 +13,7 @@ const productionDB = {
   
   password: '3452aa39e18db70b942b10bdc24c61754a41369636ced465220b982f5e7ea915',
   port: 5432,
-  ssl: true
+  ssl: { rejectUnauthorized: false }
 }
 const developmentDB = {
   user: 'postgres',
