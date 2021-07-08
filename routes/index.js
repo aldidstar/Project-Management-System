@@ -15,6 +15,7 @@ module.exports = function (db) {
       "select * from users where email = $1",
       [req.body.email],
       (err, row) => {
+        console.log(err, row)
         if (err) {
           req.flash("info", "Salah nihh!");
          return res.redirect("/");
@@ -30,6 +31,7 @@ module.exports = function (db) {
           function (err, result) {
             if (result) {
               req.session.user = row.rows[0];
+              console.log(result, 'session' ,req.session)
               res.redirect("/projects");
             } else {
               req.flash("info", "email / password salah!");
@@ -55,7 +57,7 @@ module.exports = function (db) {
 
       if (row) {
        
-        res.redirect("/");
+       return res.redirect("/");
       }
     });
     })

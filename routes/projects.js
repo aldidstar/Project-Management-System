@@ -6,6 +6,7 @@ const helpers = require("../helpers/util");
 
 module.exports = function (db) {
   router.get("/", helpers.isLoggedIn, function (req, res, next) {
+    console.log(req.session)
     const { id, name, member } = req.query;
     const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}`;
     console.log(url);
