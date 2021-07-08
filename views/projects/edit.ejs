@@ -1,4 +1,4 @@
-<%- include('partials/header') %>
+<%- include('../partials/header') %>
 <form action="" method="post">
   <h1>EDIT DATA</h1>
   <div class="mb-3 row">
@@ -16,22 +16,27 @@
     </div>
   </div>
   
-  <div class="mb-3 row">
-    <label for="password" class="col-sm-2 col-form-label">Member</label>
-    <div class="col-sm-10">
-      <% memberss.forEach((item, index) => { %>
-      <input
+  
+  <div class="d-flex">
+    <div style="margin-left: -10px;" class="p-2">Member</div>
+    <div style="margin-left: 140px;" class="p-2">
+   
+    <% memberss.forEach((item, index) => { %>
+      
+      <div class="col">
+        <input
         name="projectid"
         class="form-check-input"
         type="checkbox"
         id="flexCheckDefault"
         value="<%= item.userid %>"><%= item.firstname %>
       
+      </div>
       <% }) %>
-      
-    </div>
   </div>
+</div>
   
+<br><br>
 
 
   <button type="submit" class="btn btn-primary">Update
@@ -39,7 +44,7 @@
  
   <a class="btn btn-warning" href="/projects">Back</a>
  
-  
+
 </form>
   
-<%- include('partials/footer') %>
+<%- include('../partials/footer') %>

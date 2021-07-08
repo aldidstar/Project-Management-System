@@ -1,4 +1,4 @@
-<%- include('partials/header') %>
+<%- include('../partials/header') %>
 <form action="" method="post">
   <h1>ADD DATA</h1>
 
@@ -27,9 +27,11 @@
       />
     </div>
   </div>
-  <br />
-  <div class="mb-3 row">
-    <label for="password" class="col-sm-2 col-form-label">Position</label>
+  
+  <div class="d-flex">
+    <div style="margin-left: -10px;" class="p-2">Position</div>
+    <div style="margin-left: 140px;" class="p-2">
+    
     <div class="col">
       <input
         class="form-check-input"
@@ -65,6 +67,9 @@
       </label>
     </div>
   </div>
+</div>
+
+<br>
 
   <div class="mb-3 row">
     <label for="Member" class="col-sm-2 col-form-label">Member</label>
@@ -88,4 +93,4 @@
   <a class="btn btn-warning" href="/Projects">Back</a>
 </form>
 
-<%- include('partials/footer') %>
+<%- include('../partials/footer') %>

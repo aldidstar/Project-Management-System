@@ -11,7 +11,7 @@ module.exports = function (db) {
     const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}`;
     console.log(url);
     const page = parseInt(req.query.page || 1);
-    const limit = 2;
+    const limit = 3;
     const offset = (page - 1) * limit;
 
     let params = [];
@@ -99,7 +99,7 @@ module.exports = function (db) {
 
     db.query(sql, (err, memberss) => {
       if (err) throw err;
-      res.render("add", {
+      res.render("projects/add", {
         memberss: memberss.rows,
       });
     });
@@ -121,19 +121,19 @@ module.exports = function (db) {
   });
 
   router.get("/delete/:id", (req, res) => {
-    let sql = `DELETE FROM projects  WHERE projectid=${req.params.id}`;
+    let sql = `DELETE FROM members WHERE projectid=${req.params.id}`;
     console.log(sql)
     db.query(sql, (err) => {
       if (err) throw err;
       
-      let sql = `DELETE FROM members  WHERE projectid=${req.params.id}`;
+      let sql = `DELETE FROM projects WHERE projectid=${req.params.id}`;
       console.log(sql)
       db.query(sql, (err) => {
         if (err) throw err;
     });
       
-    });
     res.redirect("/projects");
+    });
   });
 
   router.get("/edit/:id", (req, res) => {
@@ -146,7 +146,7 @@ module.exports = function (db) {
       db.query(sql, (err, memberss) => {
         if (err) throw err;
       if (row) {
-        res.render("edit", { nama: row.rows[0],memberss: memberss.rows, });
+        res.render("projects/edit", { nama: row.rows[0],memberss: memberss.rows, });
       }
     });
   });
