@@ -21,15 +21,20 @@
     <div style="margin-left: -10px;" class="p-2">Member</div>
     <div style="margin-left: 140px;" class="p-2">
    
-    <% memberss.forEach((item, index) => { %>
-      
-      <div class="col">
-        <input
-        name="projectid"
-        class="form-check-input"
-        type="checkbox"
-        id="flexCheckDefault"
-        value="<%= item.userid %>"><%= item.firstname %>
+      <% memberss.forEach((item, index) => { %>
+        <div class="col">
+          <input
+          name="projectid"
+          
+          class="form-check-input"
+          type="checkbox"
+          id="flexCheckDefault"
+          <% for (let i = 0; i < membersss.members.length; i++) { %>
+          value="<%= item.userid %>"
+        <%= item.firstname == membersss.members[i] ? ' checked' : '' %>
+        
+        <% } %>
+        <label class="form-check-label" for="flexCheckDefault"> <%= item.firstname %> </label>
      
       </div>
       <% }) %>

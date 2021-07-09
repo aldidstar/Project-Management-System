@@ -146,22 +146,29 @@ module.exports = function (db) {
 
   router.get("/edit/:id", (req, res) => {
     let sql = `select * from projects where projectid=${req.params.id}`;
-    console.log(sql);
     db.query(sql, (err, row) => {
       if (err) throw err;
       let sql = `select * from users`;
-
+      
       db.query(sql, (err, memberss) => {
         if (err) throw err;
-        if (row) {
-          res.render("projects/edit", {
-            nama: row.rows[0],
-            memberss: memberss.rows,
-          });
-        }
+        
+        let sql = `select projects.projectid as projectid, projects.name, ARRAY_AGG (
+          firstname ORDER BY firstname) as members from members Inner JOIN projects USING (projectid) Inner JOIN users USING (userid) WHERE projectid=${req.params.id} GROUP BY projects.projectid, projects.name ORDER BY projectid`;
+          console.log(sql);
+          db.query(sql, (err, membersss) => {
+          
+          if (err) throw err;
+
+        res.render("projects/edit", {
+          nama: row.rows[0],
+          memberss: memberss.rows,
+          membersss: membersss.rows[0]
+        });
       });
     });
   });
+});
 
   router.post("/edit/:id", (req, res) => {
     let sql = `DELETE FROM members WHERE projectid=${req.params.id}`;
@@ -181,6 +188,17 @@ module.exports = function (db) {
           if (err) throw err;
           res.redirect("/projects");
         });
+      });
+    });
+  });
+
+  router.get("/overview", helpers.isLoggedIn, (req, res) => {
+    let sql = `select * from users`;
+
+    db.query(sql, (err, memberss) => {
+      if (err) throw err;
+      res.render("projects/overview", {
+        memberss: memberss.rows,
       });
     });
   });

@@ -27,24 +27,20 @@ module.exports = function (db) {
   });
 
   router.post("/", helpers.isLoggedIn, (req, res, next) => {
-    // bcrypt.hash(`${req.body.password}`, saltRounds, function (err, hash) {
+    
     let sql = `UPDATE users SET email = '${req.body.email}', type = '${req.body.type}', position = '${req.body.position}'
         WHERE email = '${req.session.user.email}'`;
 
     db.query(sql, (err) => {
       if (err) throw err;
-      if ((hash = "")) {
-        let sql = `UPDATE users SET email = '${req.body.email}', type = '${req.body.type}', position = '${req.body.position}'
-            WHERE email = '${req.session.user.email}'`;
-      }
-      console.log(sql);
-      db.query(sql, (err) => {
+      
+      
         req.flash("info", `Data ${req.session.user.firstname} telah di update`);
         res.redirect("/profile");
       });
     });
-  });
-  // });
+  
+  
 
   router.get("/logout", function (req, res, next) {
     req.session.destroy(function (err) {
