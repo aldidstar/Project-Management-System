@@ -6,10 +6,9 @@ const helpers = require("../helpers/util");
 
 module.exports = function (db) {
   router.get("/", helpers.isLoggedIn, function (req, res, next) {
-    console.log(req.session)
     const { id, name, member } = req.query;
     const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}`;
-    console.log(url);
+
     const page = parseInt(req.query.page || 1);
     const limit = 3;
     const offset = (page - 1) * limit;
@@ -35,12 +34,11 @@ module.exports = function (db) {
     }
     sqlcount += ` GROUP BY projects.projectid, projects.name ORDER BY projectid`;
 
-    console.log(sqlcount);
     db.query(sqlcount, (err, data) => {
       if (err) {
         return res.send(err);
       }
-      
+
       const total = data.rows.length;
       const pages = Math.ceil(total / limit);
       let sql = `select * from users`;
@@ -59,7 +57,6 @@ module.exports = function (db) {
         db.query(sql, (err, row) => {
           if (err) throw err;
 
-          console.log(sql);
           db.query(sql, (err, rows) => {
             if (err) throw err;
 
@@ -109,13 +106,21 @@ module.exports = function (db) {
     });
   });
   router.post("/add", helpers.isLoggedIn, (req, res) => {
-    let sql = `INSERT INTO projects (name) VALUES ('${req.body.name}')`;
-    console.log(sql);
-    db.query(sql, (err) => {
+    let sql = `INSERT INTO projects (name) VALUES ('${req.body.name}') returning *`;
+
+    db.query(sql, (err, result) => {
       if (err) throw err;
-
-      let sql = `INSERT INTO members (userid,role,projectid) VALUES ('${req.body.userid}', '${req.body.position}', '${req.body.id}')`;
-
+      sql = `INSERT INTO members (userid,role,projectid) VALUES`;
+      for (let i = 0; i < req.body.userid.length; i++) {
+        if (i < req.body.userid.length) {
+          let values = ` (${req.body.userid[i]},'Manager', ${result.rows[0].projectid}),`;
+          if (i == req.body.userid.length - 1) {
+            values = ` (${req.body.userid[i]},'Manager', ${result.rows[0].projectid})`;
+          }
+          sql += values;
+        }
+      }
+      console.log(sql);
       db.query(sql, (err) => {
         if (err) throw err;
         res.redirect("/projects");
@@ -160,7 +165,7 @@ module.exports = function (db) {
 
   router.post("/edit/:id", (req, res) => {
     let sql = `DELETE FROM members WHERE projectid=${req.params.id}`;
-    console.log(sql);
+
     db.query(sql, (err) => {
       if (err) throw err;
 
@@ -175,11 +180,10 @@ module.exports = function (db) {
         db.query(sql, (err) => {
           if (err) throw err;
           res.redirect("/projects");
+        });
       });
-
     });
   });
-});
 
   return router;
 };

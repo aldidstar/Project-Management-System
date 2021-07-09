@@ -92,7 +92,7 @@ module.exports = function (db) {
                 }
               );
             } else {
-              req.flash("info", `Password salah`);
+              req.flash("info", `Password lama salah`);
               res.redirect("/profile/password");
             }
           }

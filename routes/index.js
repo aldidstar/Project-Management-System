@@ -15,7 +15,7 @@ module.exports = function (db) {
       "select * from users where email = $1",
       [req.body.email],
       (err, row) => {
-        console.log(err, row)
+        
         if (err) {
           req.flash("info", "Salah nihh!");
          return res.redirect("/");
@@ -39,7 +39,7 @@ module.exports = function (db) {
             }
           }
         );
-        console.log(req.session.user);
+       
       }
     );
   });
