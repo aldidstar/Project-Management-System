@@ -217,11 +217,11 @@ module.exports = function (db) {
     helpers.isLoggedIn,
     function (req, res, next) {
       const { id, name, role } = req.query;
-      // const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}`;
       const projectid = req.params.projectid;
-
+      const url = req.url == `/members/${projectid}` ? `/projects/members/${projectid}?page=1` : `/projects${req.url}`;
+console.log(req.url)
       const page = parseInt(req.query.page || 1);
-      const limit = 3;
+      const limit = 2;
       const offset = (page - 1) * limit;
 
       let params = [];
@@ -248,22 +248,25 @@ module.exports = function (db) {
           return res.send(err);
         }
         
+        
         const total = data.rows.length;
-        const pages = Math.ceil(total / limit);
+      const pages = Math.ceil(total / limit);
         let filter = `select users.userid, users.firstname, members.role from users Inner JOIN members ON  users.userid = members.userid where projectid=${req.params.projectid}`;
         if (params.length > 0) {
           filter = `select users.userid, members.projectid, users.firstname, members.role from users Inner JOIN members ON  users.userid = members.userid where members.projectid=${projectid} AND ${params.join(" and ")}`;
         }
+        filter += ` limit ${limit} offset ${offset}`;
         console.log(filter)
         db.query(filter, (err, memberss) => {
           if (err) throw err;
           let sql = `select * from users`;
           
+          
           // if (params.length > 0) {
           //   sql += ` where ${params.join(" and ")}`;
           // }
           // sql += ` GROUP BY users.userid, users.firstname,members.role ORDER BY userid`;
-          // sql += ` limit ${limit} offset ${offset}`;
+          
           
           console.log(sql);
           db.query(sql, (err, row) => {
@@ -286,7 +289,7 @@ module.exports = function (db) {
                     memberss: memberss.rows,
                     page,
                     pages,
-                    // url,
+                    url,
                     projectid,
                   });
                 }
