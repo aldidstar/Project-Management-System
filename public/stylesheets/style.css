@@ -25,7 +25,7 @@ a {
   overflow-y: auto;
   background: rgb(238, 237, 237);
   color: black;
-  border: 5px;
+  
   
 }
 
@@ -88,18 +88,36 @@ a {
   width: 100%;
 }
 
-.sidebar-navigation .header {
-  font-size: 12px;
-  text-transform: uppercase;
-  background-color: #151515;
-  padding: 10px 15px 10px 30px;
-}
 
-.sidebar-navigation .header::before {
-  background-color: transparent;
-}
 
 .content-container {
   padding-left: 220px;
 }
 
+.container-issue{
+  height: 150px;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid black;
+  
+  
+}
+
+.container-issue h4 {
+  margin-left: 15px;
+  margin-top: 25px;
+}
+
+.container-issues{
+  height: 140px;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid black;
+  margin-top: 50px;
+  
+}
+
+.container-issues h4 {
+  margin-left: 15px;
+  margin-top: 25px;
+}

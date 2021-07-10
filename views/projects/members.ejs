@@ -5,27 +5,9 @@
 
   <%- include('../partials/navbar') %>
 
+  <%- include('../partials/sidebar') %>
+        <h1>Members</h1>
  
-
- <br>
-  
-  <h1>Projects</h1>
-
-  <input onclick="myFunction1()" type="checkbox" id="myCheck1" />
-  <div class="mb-3 row">
-    <label for="ID" class="col-sm-2 col-form-label">ID</label>
-    <div class="col-sm-10">
-      <input
-        type="number"
-        value="<%= query.id %>"
-        class="form-control"
-        id="ID"
-        name="id"
-        placeholder="ID"
-        disabled
-      />
-    </div>
-  </div>
 
   <input onclick="myFunction2()" type="checkbox" id="myCheck2" />
   <div class="mb-3 row">
@@ -45,25 +27,25 @@
 
   <input onclick="myFunction3()" type="checkbox" id="myCheck3" />
   <div class="mb-3 row">
-    <label for="Member" class="col-sm-2 col-form-label">Member</label>
+    <label for="Member" class="col-sm-2 col-form-label">Position</label>
     <div class="col-sm-10">
       <select
       class="form-select"
       aria-label="Default select example"
       id="Member"
-      name="member"
+      name="role"
      
       disabled
       >
       <option selected>Open this select menu</option>
       <% memberss.forEach((item, index) => { %>
-        <option value="<%= item.userid %>" <%= query.member == item.userid ? ' selected' : '' %>><%= item.firstname %></option>
+        <option value="<%= item.role %>" <%= query.role == item.role ? ' selected' : '' %>><%= item.role %></option>
         <% }) %>
       </select>
     </div>
   </div>
   <button type="submit" class="btn btn-success">Search</button>
-  <a class="btn btn-warning" href="/projects">Reset</a>
+  <a class="btn btn-warning" href="/projects/members/<%= projectid %>">Reset</a>
 </form>
 
 <br /><br /><br /><br />
@@ -114,63 +96,38 @@
 
 <table  class="table table-striped">
   <tr>
-    <% if(options["projectid"]) { %>
-    <th  id="checkid">ID</th>
-    <% } %>
-    <% if(options["name"]) { %>
+  
+    <th  id="checkid">#</th>
+   
+  
     <th  id="checkname">Name</th>
-    <% } %>
-    <% if(options["members"]) { %>
-    <th  id="checkname">Member</th>
-    <% } %>
+    
+
+    <th  id="checkname">Position</th>
+ 
     <th>Action</th>
   </tr>
   <% nama.forEach((item, index) => { %>
   <tr  class="genap">
-    <% if(options["projectid"]) { %>
-    <td  id="cekid"><a style="text-decoration: none;" href="/projects/overview/<%= item.projectid%>"><%= item.projectid %></a></td>
-    <% } %>
+    <td><%= index + 1 %></td>
     <% if(options["name"]) { %>
-    <td  id="cekname"><%= item.name %></td>
+    <td  id="cekname"><%= item.firstname %></td>
     <% } %>
     <% if(options["members"]) { %>
-    <td  id="cekname"><%= item.members %></td>
+    <td  id="cekname"><%= item.role %></td>
     <% } %>
     <td>
-      <a class="btn btn-success" href="/projects/edit/<%= item.projectid%>">edit</a>
+      <a class="btn btn-success" href="/projects/members/<%= projectid %>">edit</a>
       <a class="btn btn-danger" href="/projects/delete/<%= item.projectid%>">delete</a>
     </td>
   </tr>
   <% }) %>
 </table>
 
-<nav aria-label="...">
-  <ul class="pagination">
-    <li class="page-item ">
-      <% if(page > 1) { %>
-          <% let i = page  %>
-          <% i--  %>
-      <a class="page-link " href="<%= url.replace(`page=${page}`, `page=${i}`) %>"  >Previous</a>
-      <% } %>
-    </li>
-    <% for(let i = 1; i <= pages ; i++) { %>
-    <li class="page-item <%= page == i ? 'active' : '' %>"><a class="page-link" href="<%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %></a></li>
-    <% } %>
-  </li>
-   
-    
-    <li class="page-item">
-      <% if(page <= pages - 1) { %>
-          <% let i = page  %>
-          <% i++  %>
-      <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${i}`) %>">Next</a>
-      <% } %>
-    </li>
-  </ul>
-</nav>
+
 <br>
 
-<a class="btn btn-primary" href="/projects/add/"> Add</a>
+<a class="btn btn-primary" href="/projects/members/<%= projectid %>/add"> Add</a>
 
 <script>
   function myFunction1() {
