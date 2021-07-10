@@ -107,7 +107,7 @@
  
     <th>Action</th>
   </tr>
-  <% nama.forEach((item, index) => { %>
+  <% memberss.forEach((item, index) => { %>
   <tr  class="genap">
     <td><%= index + 1 %></td>
     <% if(options["name"]) { %>
@@ -117,8 +117,8 @@
     <td  id="cekname"><%= item.role %></td>
     <% } %>
     <td>
-      <a class="btn btn-success" href="/projects/members/<%= projectid %>">edit</a>
-      <a class="btn btn-danger" href="/projects/delete/<%= item.projectid%>">delete</a>
+      <a class="btn btn-success" href="/projects/members/<%= projectid %>/edit/<%= item.userid %>">edit</a>
+      <a class="btn btn-danger" href="/projects/members/<%= projectid %>/delete/<%= item.userid %>">delete</a>
     </td>
   </tr>
   <% }) %>

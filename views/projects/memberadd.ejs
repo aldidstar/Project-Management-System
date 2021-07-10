@@ -15,12 +15,13 @@
       >
         <option selected>Open this select menu</option>
         <% users.forEach((item, index) => { %>
-        <option><%= item.firstname %></option>
+        <option value="<%=item.userid %>" ><%= item.firstname %></option>
         <% }) %>
       </select>
     </div>
   </div>
 
+  
   <br />
 
   <div class="mb-3 row">
@@ -30,13 +31,13 @@
         class="form-select"
         aria-label="Default select example"
         id="Member"
-        name="member"
+        name="role"
       >
         <option selected>Open this select menu</option>
 
         <% members.forEach((item, index) => { %>
 
-        <option><%= item.position %></option>
+        <option  ><%= item.position %></option>
         <% }) %>
       </select>
     </div>
