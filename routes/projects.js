@@ -405,14 +405,14 @@ module.exports = function (db) {
     const projectid = req.params.projectid;
     const { id, subject, tracker } = req.query;
     
-    // const url =
-    //   req.url == `/members/${projectid}`
-    //     ? `/projects/members/${projectid}?page=1`
-    //     : `/projects${req.url}`;
-    // console.log(req.url);
-    // const page = parseInt(req.query.page || 1);
-    // const limit = 2;
-    // const offset = (page - 1) * limit;
+    const url =
+      req.url == `/issue/${projectid}`
+        ? `/projects/issue/${projectid}?page=1`
+        : `/projects${req.url}`;
+    console.log(req.url);
+    const page = parseInt(req.query.page || 1);
+    const limit = 2;
+    const offset = (page - 1) * limit;
 
     let params = [];
     if (subject) {
@@ -426,37 +426,37 @@ module.exports = function (db) {
     if (tracker) {
       params.push(`issues.tracker = '${tracker}'`);
     }
-    // let sqlcount = ` select issueid, subject, tracker from issues where projectid=${projectid}`;
-    // if (params.length > 0) {
-    //   sqlcount += ` and ${params.join(" and ")}`;
-    // }
+    let sqlcount = ` select issueid, subject, tracker from issues where projectid=${projectid}`;
+    if (params.length > 0) {
+      sqlcount += ` and ${params.join(" and ")}`;
+    }
 
-    // db.query(sqlcount, (err, data) => {
-    //   if (err) {
-    //     return res.send(err);
-    //   }
+    db.query(sqlcount, (err, data) => {
+      if (err) {
+        return res.send(err);
+      }
 
-      // const total = data.rows.length;
-      // const pages = Math.ceil(total / limit);
+      const total = data.rows.length;
+      const pages = Math.ceil(total / limit);
       let issue = ` select issueid, subject, tracker from issues where projectid=${projectid}`;
       if (params.length > 0) {
         issue += ` and ${params.join(" and ")}`;
       }
-      // issue += ` limit ${limit} offset ${offset}`;
+      issue += ` limit ${limit} offset ${offset}`;
       db.query(issue, (err, issue) => {
         if (err) throw err;
         res.render(`projects/issue`, {
-          // nama: data.rows,
+          nama: data.rows,
           projectid,
           issue: issue.rows,
           query: req.query,
-          // page,
-          // pages,
-          // url,
+          page,
+          pages,
+          url,
         });
       });
     });
-  // });
+  });
 
   router.get(`/issue/:projectid/add`, helpers.isLoggedIn, (req, res, next) => {
     const projectid = req.params.projectid;

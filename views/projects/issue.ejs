@@ -142,13 +142,37 @@
     <td  id="cekname"><%= item.tracker %></td>
    
     <td>
-      <a class="btn btn-success" href="/projects/members/<%= projectid %>/edit/<%= item.userid %>">edit</a>
-      <a class="btn btn-danger" href="/projects/members/<%= projectid %>/delete/<%= item.userid %>">delete</a>
+      <a class="btn btn-success" href="/projects/issue/<%= projectid %>/edit/<%= item.issueid %>">edit</a>
+      <a class="btn btn-danger" href="/projects/issue/<%= projectid %>/delete/<%= item.issueid %>">delete</a>
     </td>
   </tr>
   <% }) %>
 </table>
 
+<nav aria-label="...">
+    <ul class="pagination">
+      <li class="page-item ">
+        <% if(page > 1) { %>
+            <% let i = page  %>
+            <% i--  %>
+        <a class="page-link " href="<%= url.replace(`page=${page}`, `page=${i}`) %>"  >Previous</a>
+        <% } %>
+      </li>
+      <% for(let i = 1; i <= pages ; i++) { %>
+      <li class="page-item <%= page == i ? ' active' : '' %>"><a class="page-link" href="<%= url.replace(`page=${page}`, `page=${i}`) %>"><%= i %></a></li>
+      <% } %>
+    </li>
+     
+      
+      <li class="page-item">
+        <% if(page <= pages - 1) { %>
+            <% let i = page  %>
+            <% i++  %>
+        <a class="page-link" href="<%= url.replace(`page=${page}`, `page=${i}`) %>">Next</a>
+        <% } %>
+      </li>
+    </ul>
+  </nav>
 
 <br>
 
