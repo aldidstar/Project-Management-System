@@ -86,7 +86,7 @@
         class="form-check-input"
         type="checkbox"
         id="flexCheckDefault"
-     
+        <%= optionissue["issueid"] ? ' checked' : ''  %>
       />
       <label class="form-check-label" for="flexCheckDefault"> ID </label>
     </div>
@@ -96,7 +96,7 @@
         class="form-check-input"
         type="checkbox"
         id="flexCheckChecked"
-
+        <%= optionissue["subject"] ? ' checked' : ''  %>
       />
       <label class="form-check-label" for="flexCheckChecked"> Subject </label>
     </div>
@@ -106,7 +106,7 @@
         class="form-check-input"
         type="checkbox"
         id="flexCheckChecked"
-    
+        <%= optionissue["tracker"] ? ' checked' : ''  %>
       />
       <label class="form-check-label" for="flexCheckChecked"> Tracker </label>
     </div>
@@ -120,27 +120,28 @@
 
 <table  class="table table-striped">
   <tr>
-  
+    <% if(optionissue["issueid"]) { %>
     <th  id="checkid">#</th>
-    
- 
+    <% } %>
+    <% if(optionissue["subject"]) { %>
     <th  id="checkname">Subject</th>
-    
+    <% } %>
+    <% if(optionissue["tracker"]) { %>
     <th  id="checkname">Tracker</th>
-  
+    <% } %>
     <th>Action</th>
   </tr>
   <% issue.forEach((item, index) => { %>
   <tr  class="genap">
-    
+    <% if(optionissue["issueid"]) { %>
     <td><%= item.issueid %></td>
-  
-    
+    <% } %>
+    <% if(optionissue["subject"]) { %>
     <td  id="cekname"><%= item.subject %></td>
-   
-   
+    <% } %>
+    <% if(optionissue["tracker"]) { %>
     <td  id="cekname"><%= item.tracker %></td>
-   
+    <% } %>
     <td>
       <a class="btn btn-success" href="/projects/issue/<%= projectid %>/edit/<%= item.issueid %>">edit</a>
       <a class="btn btn-danger" href="/projects/issue/<%= projectid %>/delete/<%= item.issueid %>">delete</a>

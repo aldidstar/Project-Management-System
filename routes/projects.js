@@ -3,10 +3,12 @@ var router = express.Router();
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const helpers = require("../helpers/util");
+var moment = require('moment');
 
 module.exports = function (db) {
   router.get("/", helpers.isLoggedIn, function (req, res, next) {
     const { id, name, member } = req.query;
+ 
     const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}`;
 
     const page = parseInt(req.query.page || 1);
@@ -445,8 +447,14 @@ module.exports = function (db) {
       issue += ` limit ${limit} offset ${offset}`;
       db.query(issue, (err, issue) => {
         if (err) throw err;
+        db.query(
+          `select optionissue from users where email = $1`,
+          [req.session.user.email],
+          (err, optionissue) => {
+            if (err) throw err;
         res.render(`projects/issue`, {
           nama: data.rows,
+          optionissue: optionissue.rows[0].optionissue,
           projectid,
           issue: issue.rows,
           query: req.query,
@@ -456,6 +464,21 @@ module.exports = function (db) {
         });
       });
     });
+  });
+});
+
+  router.post("/issue/:projectid", helpers.isLoggedIn, (req, res) => {
+    const { id, subject, tracker } = req.body;
+    
+    const projectid = req.params.projectid;
+    db.query(
+      `update users set optionissue = $1 where email = $2 `,
+      [req.body, req.session.user.email],
+      (err, data) => {
+        if (err) throw err;
+        res.redirect(`/projects/issue/${projectid}`);
+      }
+    );
   });
 
   router.get(`/issue/:projectid/add`, helpers.isLoggedIn, (req, res, next) => {
@@ -503,5 +526,33 @@ module.exports = function (db) {
     );
   });
 
-  return router;
+  router.get(`/issue/:projectid/delete/:id`, helpers.isLoggedIn, (req, res, next) => {
+    const projectid = req.params.projectid;
+    let deleteissue = ` delete from issues where issueid=${req.params.id}`;
+    db.query(deleteissue, (err, deleteissue) => {
+      if (err) throw err;
+      res.redirect(`/projects/issue/${projectid}`);
+    });
+  });
+
+  router.get(`/issue/:projectid/edit/:id`, helpers.isLoggedIn, (req, res, next) => {
+    const projectid = req.params.projectid;
+    let issue = ` select * from issues where projectid=${projectid} and issueid=${req.params.id}`;
+    console.log(issue)
+    db.query(issue, (err, issue) => {
+      if (err) throw err;
+      let ambiluser = `select * from users where  userid in (select userid from members where projectid=${projectid} )`;
+      db.query(ambiluser, (err, ambiluser) => {
+        if (err) throw err;
+
+    res.render(`projects/issueedit`, {
+      issue: issue.rows[0],
+      projectid,
+      ambiluser: ambiluser.rows,
+      moment: moment
+    });
+  });
+});
+});
+      return router;
 };

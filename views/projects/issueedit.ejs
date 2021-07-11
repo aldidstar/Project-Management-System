@@ -2,7 +2,7 @@
 <form action="" method="post" enctype="multipart/form-data">
   <%- include('../partials/navbar') %>
   <br />
-  <h1>New Issue</h1>
+  <h1>Edit Issue</h1>
 
   <div class="d-flex">
     <div style="margin-left: -10px;" class="p-2">Tracker</div>
@@ -53,7 +53,7 @@
     <div class="col-sm-10">
       <input
         type="text"
-  
+        value="<%= issue.subject %>"
         class="form-control"
         id="Name"
         name="subject"
@@ -70,13 +70,13 @@
     <div class="col-sm-10">
       <textarea
         type="text"
-  
+        
         class="form-control"
         id="Name"
         name="description"
         placeholder="Name"
         
-      ></textarea>
+      ><%= issue.description %></textarea>
     </div>
   </div>
 
@@ -228,8 +228,9 @@
       >
         <option selected>Open this select menu</option>
         <% ambiluser.forEach((item, index) => { %>
-        <option value="<%= item.userid %>" ><%= item.firstname %></option>
-        <% }) %>
+            <option value="<%= item.userid %>" <%= item.userid == issue.assignee ? ' selected' : ''   %>><%= item.firstname %></option>
+            <% }) %>
+        
       </select>
     </div>
   </div>
@@ -242,7 +243,7 @@
     <div class="col-sm-10">
       <input
         type="date"
-       
+        value="<%= moment(issue.startdate).format('YYYY-MM-DD') %>"
         class="form-control"
         id="start"
         name="startdate"
@@ -256,7 +257,7 @@
     <div class="col-sm-10">
       <input
         type="date"
-       
+        value="<%= moment(issue.duedate).format('YYYY-MM-DD') %>"
         class="form-control"
         id="due"
         name="duedate"
@@ -269,6 +270,7 @@
     <label for="Estimated" class="col-sm-2 col-form-label">Estimated Time</label>
     <div class="col-sm-10">
       <input
+      value="<%= issue.estimatedtime %>"
         type="number"
         class="form-control"
         id="Estimated"
@@ -283,6 +285,7 @@
     <label for="Done" class="col-sm-2 col-form-label">% Done</label>
     <div class="col-sm-10">
       <input
+      value="<%= issue.done %>"
         type="number"
         class="form-control"
         id="Done"
