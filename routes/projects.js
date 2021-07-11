@@ -402,9 +402,10 @@ module.exports = function (db) {
     let issue = ` select issueid, subject, tracker from issues where projectid=${projectid}`;
     db.query(issue, (err, issue) => {
       if (err) throw err;
+
       res.render(`projects/issue`, {
         projectid,
-        issue: issue.rows
+        issue: issue.rows,
       });
     });
   });
@@ -414,12 +415,47 @@ module.exports = function (db) {
     let issue = ` select * from issues where projectid=${projectid}`;
     db.query(issue, (err, issue) => {
       if (err) throw err;
-      res.render(`projects/issueadd`, {
-        projectid,
-        issue: issue.rows
+      let ambiluser = `select * from users where  userid in (select userid from members where projectid=${projectid} )`;
+      db.query(ambiluser, (err, ambiluser) => {
+        if (err) throw err;
+        
+        res.render(`projects/issueadd`, {
+          projectid,
+          issue: issue.rows,
+          ambiluser: ambiluser.rows,
+        });
       });
     });
-  })
+  });
+  router.post(`/issue/:projectid/add`, (req, res) => {
+    
+    const projectid = req.params.projectid;
+    db.query(
+      `insert into issues (tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, projectid, author, createddate)
+     values ($1,$2,$3,$4, $5,$6,$7,$8,$9, $10, $11, $12, $13, now())`,
+      [
+        req.body.tracker,
+        req.body.subject,
+        req.body.description,
+        req.body.status,
+        req.body.priority,
+        req.body.assignee,
+        req.body.startdate,
+        req.body.duedate,
+        req.body.estimatedtime,
+        req.body.done,
+        req.body.files,
+        req.params.projectid,
+        req.session.user.userid
+        
+      ],
+      (err, addissue) => {
+        if (err) throw err;
+        console.log(addissue)
+        res.redirect(`/projects/issue/${projectid}`);
+      }
+    );
+  });
 
   return router;
 };
