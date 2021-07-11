@@ -9,7 +9,7 @@
         <h1>Issues</h1>
 
 
-        <input onclick="myFunction2()" type="checkbox" id="myCheck2" />
+        <input onclick="myFunction1()" type="checkbox" id="myCheck1" />
   <div class="mb-3 row">
     <label for="ID" class="col-sm-2 col-form-label">ID</label>
     <div class="col-sm-10">
@@ -20,6 +20,7 @@
         id="ID"
         name="id"
         placeholder="ID"
+        value="<%= query.id %>"
         disabled
       />
     </div>
@@ -29,14 +30,14 @@
 
   <input onclick="myFunction2()" type="checkbox" id="myCheck2" />
   <div class="mb-3 row">
-    <label for="Name" class="col-sm-2 col-form-label">Subject</label>
+    <label for="Subject" class="col-sm-2 col-form-label">Subject</label>
     <div class="col-sm-10">
       <input
         type="text"
-  
+        value="<%= query.subject %>"
         class="form-control"
-        id="Name"
-        name="name"
+        id="Subject"
+        name="subject"
         placeholder="Name"
         disabled
       />
@@ -45,20 +46,22 @@
 
   <input onclick="myFunction3()" type="checkbox" id="myCheck3" />
   <div class="mb-3 row">
-    <label for="Member" class="col-sm-2 col-form-label">Position</label>
+    <label for="Tracker" class="col-sm-2 col-form-label">Tracker</label>
     <div class="col-sm-10">
       <select
       class="form-select"
       aria-label="Default select example"
-      id="Member"
-      name="role"
+      id="Tracker"
+      name="tracker"
      
       disabled
       >
       <option selected>Open this select menu</option>
-      <% issue.forEach((item, index) => { %>
-        <option ><%= item.tracker %></option>
-        <% }) %>
+     
+        <option value="Bug" <%= query.tracker == 'Bug' ? ' selected' : '' %>>Bug</option>
+        <option value="Feature" <%= query.tracker == 'Feature' ? ' selected' : '' %> >Feature</option>
+        <option value="Support" <%= query.tracker == 'Support' ? ' selected' : '' %> >Support</option>
+        
       </select>
     </div>
   </div>
@@ -66,7 +69,7 @@
   
   
   <button type="submit" class="btn btn-success">Search</button>
-  <a class="btn btn-warning" href="/projects/members/<%= projectid %>">Reset</a>
+  <a class="btn btn-warning" href="/projects/issue/<%= projectid %>">Reset</a>
 </form>
 
 <br /><br /><br /><br />
@@ -161,17 +164,17 @@
   }
   function myFunction2() {
     if (document.getElementById("myCheck2").checked == true) {
-      document.getElementById("Name").disabled = false;
+      document.getElementById("Subject").disabled = false;
     } else {
-      document.getElementById("Name").disabled = true;
+      document.getElementById("Subject").disabled = true;
     }
   }
 
   function myFunction3() {
     if (document.getElementById("myCheck3").checked == true) {
-      document.getElementById("Member").disabled = false;
+      document.getElementById("Tracker").disabled = false;
     } else {
-      document.getElementById("Member").disabled = true;
+      document.getElementById("Tracker").disabled = true;
     }
   }
 
