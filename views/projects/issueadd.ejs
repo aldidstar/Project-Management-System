@@ -1,0 +1,265 @@
+<%- include('../partials/header') %>
+<form action="" method="post">
+  <%- include('../partials/navbar') %>
+  <br />
+  <h1>New Issue</h1>
+
+  <div class="d-flex">
+    <div style="margin-left: -10px;" class="p-2">Tracker</div>
+    <div style="margin-left: 140px;" class="p-2">
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="tracker"
+      id="exampleRadios1"
+      value="Bug"<%= issue.tracker == 'Bug' ? ' checked' : '' %>
+      
+      
+    />
+    <label class="form-check-label" for="exampleRadios1"> Bug </label>
+  </div>
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="tracker"
+      id="exampleRadios2"
+      value="Feature"<%= issue.tracker == 'Feature' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios2">
+      Feature
+    </label>
+  </div>
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="tracker"
+      id="exampleRadios3"
+      value="Support" <%= issue.tracker == 'Support' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios3">
+      Support
+    </label>
+  </div>
+</div>
+</div>
+
+<br>
+
+<div class="mb-3 row">
+    <label for="Name" class="col-sm-2 col-form-label">Subject</label>
+    <div class="col-sm-10">
+      <input
+        type="text"
+  
+        class="form-control"
+        id="Name"
+        name="name"
+        placeholder="Name"
+        
+      />
+    </div>
+  </div>
+
+  <br>
+
+  <div class="mb-3 row">
+    <label for="Name" class="col-sm-2 col-form-label">Subject</label>
+    <div class="col-sm-10">
+      <textarea
+        type="text"
+  
+        class="form-control"
+        id="Name"
+        name="name"
+        placeholder="Name"
+        
+      ></textarea>
+    </div>
+  </div>
+
+ 
+
+  <div class="d-flex">
+    <div style="margin-left: -5px;" class="p-2">Status</div>
+    <div style="margin-left: 140px;" class="p-2">
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="status"
+      id="exampleRadios1"
+      value="New"<%= issue.status == 'New' ? ' checked' : '' %>
+      
+      
+    />
+    <label class="form-check-label" for="exampleRadios1"> New </label>
+  </div>
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="status"
+      id="exampleRadios2"
+      value="In Progress"<%= issue.status == 'In Progress' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios2">
+        In Progress
+    </label>
+  </div>
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="status"
+      id="exampleRadios3"
+      value="Resolved" <%= issue.status == 'Resolved' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios3">
+      Resolved
+    </label>
+  </div>
+
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="status"
+      id="exampleRadios4"
+      value="Feedback" <%= issue.status == 'Feedback' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios4">
+      Feedback
+    </label>
+  </div>
+
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="status"
+      id="exampleRadios5"
+      value="Closed" <%= issue.status == 'Closed' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios5">
+      Closed
+    </label>
+  </div>
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="status"
+      id="exampleRadios6"
+      value="Rejected" <%= issue.status == 'Rejected' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios6">
+      Rejected
+    </label>
+  </div>
+</div>
+</div>
+
+
+<div class="d-flex">
+    <div style="margin-left: -10px;" class="p-2">Priority</div>
+    <div style="margin-left: 140px;" class="p-2">
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="priority"
+      id="exampleRadios1"
+      value="Normal"<%= issue.priority == 'Normal' ? ' checked' : '' %>
+      
+      
+    />
+    <label class="form-check-label" for="exampleRadios1"> Normal </label>
+  </div>
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="priority"
+      id="exampleRadios2"
+      value="High"<%= issue.priority == 'High' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios2">
+      High
+    </label>
+  </div>
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="priority"
+      id="exampleRadios3"
+      value="Urgent" <%= issue.priority == 'Urgent' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios3">
+      Urgent
+    </label>
+  </div>
+  <div class="col">
+    <input 
+      class="form-check-input"
+      type="radio"
+      name="priority"
+      id="exampleRadios4"
+      value="Immediate" <%= issue.priority == 'Immediate' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios4">
+      Immediate
+    </label>
+  </div>
+</div>
+</div>
+
+  <div class="mb-3 row">
+    <label for="Member" class="col-sm-2 col-form-label">Member</label>
+    <div class="col-sm-10">
+      <select
+        class="form-select"
+        aria-label="Default select example"
+        id="Member"
+        name="member"
+      >
+        <option selected>Open this select menu</option>
+        <% issue.forEach((item, index) => { %>
+        <option  ><%= item.tracker %></option>
+        <% }) %>
+      </select>
+    </div>
+  </div>
+
+  
+  <br />
+
+  <div class="mb-3 row">
+    <label for="Member" class="col-sm-2 col-form-label">Position</label>
+    <div class="col-sm-10">
+      <select
+        class="form-select"
+        aria-label="Default select example"
+        id="Member"
+        name="role"
+      >
+        <option selected>Open this select menu</option>
+
+        <% issue.forEach((item, index) => { %>
+
+        <option  ><%= item.subject %></option>
+        <% }) %>
+      </select>
+    </div>
+  </div>
+
+  <br />
+  <button type="submit" class="btn btn-primary">Save</button>
+
+  <a class="btn btn-warning" href="/projects/members/<%= projectid %>">Back</a>
+</form>
+
+<%- include('../partials/footer') %>

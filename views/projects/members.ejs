@@ -49,7 +49,7 @@
 </form>
 
 <br /><br /><br /><br />
-<form action="/projects" method="POST">
+<form action="" method="POST">
   <h1>Options</h1>
 
   <div class="d-flex">
@@ -58,11 +58,11 @@
    
     <div class="col">
       <input
-        name="projectid"
+        name="id"
         class="form-check-input"
         type="checkbox"
         id="flexCheckDefault"
-        <%= options["projectid"] ? ' checked' : ''  %>
+        <%= optionmember["id"] ? ' checked' : ''  %>
       />
       <label class="form-check-label" for="flexCheckDefault"> ID </label>
     </div>
@@ -72,17 +72,17 @@
         class="form-check-input"
         type="checkbox"
         id="flexCheckChecked"
-        <%= options["name"] ? ' checked' : ''  %>
+        <%= optionmember["name"] ? ' checked' : ''  %>
       />
       <label class="form-check-label" for="flexCheckChecked"> Name </label>
     </div>
     <div class="col">
       <input
-        name="members"
+        name="role"
         class="form-check-input"
         type="checkbox"
         id="flexCheckChecked"
-        <%= options["members"] ? ' checked' : ''  %>
+        <%= optionmember["role"] ? ' checked' : ''  %>
       />
       <label class="form-check-label" for="flexCheckChecked"> Member </label>
     </div>
@@ -96,24 +96,26 @@
 
 <table  class="table table-striped">
   <tr>
-  
+    <% if(optionmember["id"]) { %>
     <th  id="checkid">#</th>
-   
-  
+    <% } %>
+    <% if(optionmember["name"]) { %>
     <th  id="checkname">Name</th>
-    
-
+    <% } %>
+    <% if(optionmember["role"]) { %>
     <th  id="checkname">Position</th>
- 
+    <% } %>
     <th>Action</th>
   </tr>
   <% memberss.forEach((item, index) => { %>
   <tr  class="genap">
+    <% if(optionmember["id"]) { %>
     <td><%= index + 1 %></td>
-    <% if(options["name"]) { %>
+    <% } %>
+    <% if(optionmember["name"]) { %>
     <td  id="cekname"><%= item.firstname %></td>
     <% } %>
-    <% if(options["members"]) { %>
+    <% if(optionmember["role"]) { %>
     <td  id="cekname"><%= item.role %></td>
     <% } %>
     <td>

@@ -218,8 +218,11 @@ module.exports = function (db) {
     function (req, res, next) {
       const { id, name, role } = req.query;
       const projectid = req.params.projectid;
-      const url = req.url == `/members/${projectid}` ? `/projects/members/${projectid}?page=1` : `/projects${req.url}`;
-console.log(req.url)
+      const url =
+        req.url == `/members/${projectid}`
+          ? `/projects/members/${projectid}?page=1`
+          : `/projects${req.url}`;
+      console.log(req.url);
       const page = parseInt(req.query.page || 1);
       const limit = 2;
       const offset = (page - 1) * limit;
@@ -240,34 +243,29 @@ console.log(req.url)
       let sqlcount = `select users.userid, users.firstname, members.role from users Inner JOIN members ON  users.userid = members.userid where members.projectid=${projectid}`;
 
       if (params.length > 0) {
-        sqlcount = `select users.userid, members.projectid, users.firstname, members.role from users Inner JOIN members ON  users.userid = members.userid where members.projectid=${projectid} AND ${params.join(" and ")}`;
+        sqlcount = `select users.userid, members.projectid, users.firstname, members.role from users Inner JOIN members ON  users.userid = members.userid where members.projectid=${projectid} AND ${params.join(
+          " and "
+        )}`;
       }
-      // sqlcount += ` GROUP BY users.userid, users.firstname,members.role ORDER BY userid`;
+
       db.query(sqlcount, (err, data) => {
         if (err) {
           return res.send(err);
         }
-        
-        
+
         const total = data.rows.length;
-      const pages = Math.ceil(total / limit);
+        const pages = Math.ceil(total / limit);
         let filter = `select users.userid, users.firstname, members.role from users Inner JOIN members ON  users.userid = members.userid where projectid=${req.params.projectid}`;
         if (params.length > 0) {
-          filter = `select users.userid, members.projectid, users.firstname, members.role from users Inner JOIN members ON  users.userid = members.userid where members.projectid=${projectid} AND ${params.join(" and ")}`;
+          filter = `select users.userid, members.projectid, users.firstname, members.role from users Inner JOIN members ON  users.userid = members.userid where members.projectid=${projectid} AND ${params.join(
+            " and "
+          )}`;
         }
         filter += ` limit ${limit} offset ${offset}`;
-        console.log(filter)
+        console.log(filter);
         db.query(filter, (err, memberss) => {
           if (err) throw err;
           let sql = `select * from users`;
-          
-          
-          // if (params.length > 0) {
-          //   sql += ` where ${params.join(" and ")}`;
-          // }
-          // sql += ` GROUP BY users.userid, users.firstname,members.role ORDER BY userid`;
-          
-          
           console.log(sql);
           db.query(sql, (err, row) => {
             if (err) throw err;
@@ -276,16 +274,16 @@ console.log(req.url)
               if (err) throw err;
 
               db.query(
-                `select option from users where email = $1`,
+                `select optionmember from users where email = $1`,
                 [req.session.user.email],
-                (err, options) => {
+                (err, optionmember) => {
                   if (err) throw err;
                   res.render("projects/members", {
                     nama: rows.rows,
                     namas: row.rows,
                     namass: data.rows,
                     query: req.query,
-                    options: options.rows[0].option,
+                    optionmember: optionmember.rows[0].optionmember,
                     memberss: memberss.rows,
                     page,
                     pages,
@@ -300,6 +298,20 @@ console.log(req.url)
       });
     }
   );
+
+  router.post("/members/:projectid", helpers.isLoggedIn, (req, res) => {
+    const { id, name, role } = req.body;
+    console.log(req.body);
+    const projectid = req.params.projectid;
+    db.query(
+      `update users set optionmember = $1 where email = $2 `,
+      [req.body, req.session.user.email],
+      (err, data) => {
+        if (err) throw err;
+        res.redirect(`/projects/members/${projectid}`);
+      }
+    );
+  });
 
   router.get("/members/:projectid/add", helpers.isLoggedIn, (req, res) => {
     const projectid = req.params.projectid;
@@ -347,7 +359,7 @@ console.log(req.url)
     let memberedit = req.params.id;
     const projectid = req.params.projectid;
     let sql = `select users.userid, users.firstname, members.role from users Inner JOIN members ON  users.userid = members.userid where members.userid=${memberedit} and projectid=${projectid}`;
-    
+
     db.query(sql, (err, row) => {
       if (err) throw err;
       console.log(row.rows[0].role);
@@ -358,17 +370,17 @@ console.log(req.url)
         db.query(sql, (err, role) => {
           if (err) throw err;
           console.log(role.rows[0].role);
-        res.render("projects/memberedit", {
-          nama: row.rows[0],
-          members: members.rows,
-          roles: role.rows[0],
-          memberedit,
-          projectid,
+          res.render("projects/memberedit", {
+            nama: row.rows[0],
+            members: members.rows,
+            roles: role.rows[0],
+            memberedit,
+            projectid,
+          });
         });
       });
     });
   });
-});
 
   router.post("/members/:projectid/edit/:id", (req, res) => {
     let memberedit = req.params.id;
@@ -377,13 +389,37 @@ console.log(req.url)
     let sql = `UPDATE members 
         SET role = '${req.body.role}'
         WHERE userid='${memberedit}' and projectid=${projectid}`;
-console.log(sql)
+    console.log(sql);
     db.query(sql, (err) => {
       if (err) throw err;
 
       res.redirect(`/projects/members/${projectid}`);
     });
   });
+
+  router.get("/issue/:projectid", (req, res, next) => {
+    const projectid = req.params.projectid;
+    let issue = ` select issueid, subject, tracker from issues where projectid=${projectid}`;
+    db.query(issue, (err, issue) => {
+      if (err) throw err;
+      res.render(`projects/issue`, {
+        projectid,
+        issue: issue.rows
+      });
+    });
+  });
+
+  router.get(`/issue/:projectid/add`, (req, res, next) => {
+    const projectid = req.params.projectid;
+    let issue = ` select * from issues where projectid=${projectid}`;
+    db.query(issue, (err, issue) => {
+      if (err) throw err;
+      res.render(`projects/issueadd`, {
+        projectid,
+        issue: issue.rows
+      });
+    });
+  })
 
   return router;
 };

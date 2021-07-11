@@ -1,0 +1,181 @@
+<%- include('../partials/header') %>
+
+<form action="" method="GET">
+  <input type="hidden" name="page" value="1" />
+
+  <%- include('../partials/navbar') %>
+
+  <%- include('../partials/sidebar') %>
+        <h1>Issues</h1>
+
+
+        <input onclick="myFunction2()" type="checkbox" id="myCheck2" />
+  <div class="mb-3 row">
+    <label for="ID" class="col-sm-2 col-form-label">ID</label>
+    <div class="col-sm-10">
+      <input
+        type="text"
+  
+        class="form-control"
+        id="ID"
+        name="id"
+        placeholder="ID"
+        disabled
+      />
+    </div>
+  </div>
+
+ 
+
+  <input onclick="myFunction2()" type="checkbox" id="myCheck2" />
+  <div class="mb-3 row">
+    <label for="Name" class="col-sm-2 col-form-label">Subject</label>
+    <div class="col-sm-10">
+      <input
+        type="text"
+  
+        class="form-control"
+        id="Name"
+        name="name"
+        placeholder="Name"
+        disabled
+      />
+    </div>
+  </div>
+
+  <input onclick="myFunction3()" type="checkbox" id="myCheck3" />
+  <div class="mb-3 row">
+    <label for="Member" class="col-sm-2 col-form-label">Position</label>
+    <div class="col-sm-10">
+      <select
+      class="form-select"
+      aria-label="Default select example"
+      id="Member"
+      name="role"
+     
+      disabled
+      >
+      <option selected>Open this select menu</option>
+      <% issue.forEach((item, index) => { %>
+        <option ><%= item.tracker %></option>
+        <% }) %>
+      </select>
+    </div>
+  </div>
+
+  
+  
+  <button type="submit" class="btn btn-success">Search</button>
+  <a class="btn btn-warning" href="/projects/members/<%= projectid %>">Reset</a>
+</form>
+
+<br /><br /><br /><br />
+<form action="" method="POST">
+  <h1>Options</h1>
+
+  <div class="d-flex">
+    <div style="margin-left: -10px;" class="p-2">Type</div>
+    <div style="margin-left: 160px;" class="p-2">
+   
+    <div class="col">
+      <input
+        name="issueid"
+        class="form-check-input"
+        type="checkbox"
+        id="flexCheckDefault"
+     
+      />
+      <label class="form-check-label" for="flexCheckDefault"> ID </label>
+    </div>
+    <div class="col">
+      <input
+        name="subject"
+        class="form-check-input"
+        type="checkbox"
+        id="flexCheckChecked"
+
+      />
+      <label class="form-check-label" for="flexCheckChecked"> Subject </label>
+    </div>
+    <div class="col">
+      <input
+        name="tracker"
+        class="form-check-input"
+        type="checkbox"
+        id="flexCheckChecked"
+    
+      />
+      <label class="form-check-label" for="flexCheckChecked"> Tracker </label>
+    </div>
+  </div>
+</div>
+
+  <button type="submit" class="btn btn-success">Apply</button>
+  
+</form>
+<br /><br /><br /><br />
+
+<table  class="table table-striped">
+  <tr>
+  
+    <th  id="checkid">#</th>
+    
+ 
+    <th  id="checkname">Subject</th>
+    
+    <th  id="checkname">Tracker</th>
+  
+    <th>Action</th>
+  </tr>
+  <% issue.forEach((item, index) => { %>
+  <tr  class="genap">
+    
+    <td><%= item.issueid %></td>
+  
+    
+    <td  id="cekname"><%= item.subject %></td>
+   
+   
+    <td  id="cekname"><%= item.tracker %></td>
+   
+    <td>
+      <a class="btn btn-success" href="/projects/members/<%= projectid %>/edit/<%= item.userid %>">edit</a>
+      <a class="btn btn-danger" href="/projects/members/<%= projectid %>/delete/<%= item.userid %>">delete</a>
+    </td>
+  </tr>
+  <% }) %>
+</table>
+
+
+<br>
+
+<a class="btn btn-primary" href="/projects/issue/<%= projectid %>/add"> Add</a>
+
+<script>
+  function myFunction1() {
+    if (document.getElementById("myCheck1").checked == true) {
+      document.getElementById("ID").disabled = false;
+    } else {
+      document.getElementById("ID").disabled = true;
+    }
+  }
+  function myFunction2() {
+    if (document.getElementById("myCheck2").checked == true) {
+      document.getElementById("Name").disabled = false;
+    } else {
+      document.getElementById("Name").disabled = true;
+    }
+  }
+
+  function myFunction3() {
+    if (document.getElementById("myCheck3").checked == true) {
+      document.getElementById("Member").disabled = false;
+    } else {
+      document.getElementById("Member").disabled = true;
+    }
+  }
+
+ 
+</script>
+
+<%- include('../partials/footer') %>
