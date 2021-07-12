@@ -7,6 +7,7 @@ var session = require('express-session')
 var flash = require('connect-flash');
 var fileupload = require('express-fileupload');
 
+
 const productionDB = {
   user: 'htzryijxomsdpa',
   host: 'ec2-35-169-188-58.compute-1.amazonaws.com',

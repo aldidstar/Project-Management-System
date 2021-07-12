@@ -1,14 +1,16 @@
 var express = require("express");
 var router = express.Router();
 const bcrypt = require("bcrypt");
+const path = require("path");
 const saltRounds = 10;
 const helpers = require("../helpers/util");
-var moment = require('moment');
+var moment = require("moment");
+const { query } = require("express");
 
 module.exports = function (db) {
   router.get("/", helpers.isLoggedIn, function (req, res, next) {
     const { id, name, member } = req.query;
- 
+
     const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}`;
 
     const page = parseInt(req.query.page || 1);
@@ -227,6 +229,7 @@ module.exports = function (db) {
       console.log(req.url);
       const page = parseInt(req.query.page || 1);
       const limit = 2;
+
       const offset = (page - 1) * limit;
 
       let params = [];
@@ -291,6 +294,7 @@ module.exports = function (db) {
                     pages,
                     url,
                     projectid,
+                    limit,
                   });
                 }
               );
@@ -406,7 +410,7 @@ module.exports = function (db) {
   router.get("/issue/:projectid", helpers.isLoggedIn, (req, res, next) => {
     const projectid = req.params.projectid;
     const { id, subject, tracker } = req.query;
-    
+
     const url =
       req.url == `/issue/${projectid}`
         ? `/projects/issue/${projectid}?page=1`
@@ -414,6 +418,7 @@ module.exports = function (db) {
     console.log(req.url);
     const page = parseInt(req.query.page || 1);
     const limit = 2;
+
     const offset = (page - 1) * limit;
 
     let params = [];
@@ -432,7 +437,7 @@ module.exports = function (db) {
     if (params.length > 0) {
       sqlcount += ` and ${params.join(" and ")}`;
     }
-
+    sqlcount += `order by issueid`;
     db.query(sqlcount, (err, data) => {
       if (err) {
         return res.send(err);
@@ -444,6 +449,7 @@ module.exports = function (db) {
       if (params.length > 0) {
         issue += ` and ${params.join(" and ")}`;
       }
+      issue += `order by issueid`;
       issue += ` limit ${limit} offset ${offset}`;
       db.query(issue, (err, issue) => {
         if (err) throw err;
@@ -452,24 +458,25 @@ module.exports = function (db) {
           [req.session.user.email],
           (err, optionissue) => {
             if (err) throw err;
-        res.render(`projects/issue`, {
-          nama: data.rows,
-          optionissue: optionissue.rows[0].optionissue,
-          projectid,
-          issue: issue.rows,
-          query: req.query,
-          page,
-          pages,
-          url,
-        });
+            res.render(`projects/issue`, {
+              nama: data.rows,
+              optionissue: optionissue.rows[0].optionissue,
+              projectid,
+              issue: issue.rows,
+              query: req.query,
+              page,
+              pages,
+              url,
+            });
+          }
+        );
       });
     });
   });
-});
 
   router.post("/issue/:projectid", helpers.isLoggedIn, (req, res) => {
     const { id, subject, tracker } = req.body;
-    
+
     const projectid = req.params.projectid;
     db.query(
       `update users set optionissue = $1 where email = $2 `,
@@ -500,6 +507,16 @@ module.exports = function (db) {
   });
   router.post(`/issue/:projectid/add`, helpers.isLoggedIn, (req, res) => {
     const projectid = req.params.projectid;
+    const file = req.files.files;
+    let fotos = []
+    file.forEach(item => {
+      const files = `${Date.now()}-${item.name}`;
+      let uploaddata = path.join(__dirname, `../public/images/${files}`)
+          item.mv(uploaddata, (err,uploaddata)  => {
+          if (err) throw err;
+          fotos.push({name: files, mimetype:item.mimetype})
+    })
+  });
     db.query(
       `insert into issues (tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, projectid, author, createddate)
      values ($1,$2,$3,$4, $5,$6,$7,$8,$9, $10, $11, $12, $13, now())`,
@@ -514,45 +531,93 @@ module.exports = function (db) {
         req.body.duedate,
         req.body.estimatedtime,
         req.body.done,
-        req.body.files,
+        fotos,
         req.params.projectid,
         req.session.user.userid,
       ],
       (err, addissue) => {
         if (err) throw err;
-        console.log(addissue);
+        
+    
         res.redirect(`/projects/issue/${projectid}`);
+      
       }
     );
   });
 
-  router.get(`/issue/:projectid/delete/:id`, helpers.isLoggedIn, (req, res, next) => {
-    const projectid = req.params.projectid;
-    let deleteissue = ` delete from issues where issueid=${req.params.id}`;
-    db.query(deleteissue, (err, deleteissue) => {
-      if (err) throw err;
-      res.redirect(`/projects/issue/${projectid}`);
-    });
-  });
-
-  router.get(`/issue/:projectid/edit/:id`, helpers.isLoggedIn, (req, res, next) => {
-    const projectid = req.params.projectid;
-    let issue = ` select * from issues where projectid=${projectid} and issueid=${req.params.id}`;
-    console.log(issue)
-    db.query(issue, (err, issue) => {
-      if (err) throw err;
-      let ambiluser = `select * from users where  userid in (select userid from members where projectid=${projectid} )`;
-      db.query(ambiluser, (err, ambiluser) => {
+  router.get(
+    `/issue/:projectid/delete/:id`,
+    helpers.isLoggedIn,
+    (req, res, next) => {
+      const projectid = req.params.projectid;
+      let deleteissue = ` delete from issues where issueid=${req.params.id}`;
+      db.query(deleteissue, (err, deleteissue) => {
         if (err) throw err;
+        res.redirect(`/projects/issue/${projectid}`);
+      });
+    }
+  );
 
-    res.render(`projects/issueedit`, {
-      issue: issue.rows[0],
-      projectid,
-      ambiluser: ambiluser.rows,
-      moment: moment
-    });
+  router.get(
+    `/issue/:projectid/edit/:id`,
+    helpers.isLoggedIn,
+    (req, res, next) => {
+      const projectid = req.params.projectid;
+      let issue = ` select * from issues where projectid=${projectid} and issueid=${req.params.id}`;
+      const baseUrl = `http://${req.headers.host}`
+      db.query(issue, (err, issue) => {
+        if (err) throw err;
+        let ambiluser = `select * from users where  userid in (select userid from members where projectid=${projectid} )`;
+        db.query(ambiluser, (err, ambiluser) => {
+          if (err) throw err;
+
+          res.render(`projects/issueedit`, {
+            issue: issue.rows[0],
+            projectid,
+            ambiluser: ambiluser.rows,
+            moment: moment,
+            baseUrl
+          });
+        });
+      });
+    }
+  );
+
+  router.post(`/issue/:projectid/edit/:id`, (req, res, next) => {
+    const projectid = req.params.projectid;
+    const file = req.files.files;
+
+
+    const files = `${Date.now()}-${file.name}`;
+
+    console.log(file);
+    db.query(
+      `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11 , projectid = $12, author = $13, updateddate = now() where issueid = $14 `,
+      [
+        req.body.tracker,
+        req.body.subject,
+        req.body.description,
+        req.body.status,
+        req.body.priority,
+        req.body.assignee,
+        req.body.startdate,
+        req.body.duedate,
+        req.body.estimatedtime,
+        req.body.done,
+        [{name: files, mimetype:file.mimetype}],
+        req.params.projectid,
+        req.session.user.userid,
+        req.params.id,
+      ],
+      (err, editissue) => {
+        if (err) throw err;
+        let uploaddata = path.join(__dirname, `../public/images/${files}`)
+        file.mv(uploaddata, (err,uploaddata)  => {
+        if (err) throw err;
+        res.redirect(`/projects/issue/${projectid}`);
+      });
+      }
+    );
   });
-});
-});
-      return router;
+  return router;
 };

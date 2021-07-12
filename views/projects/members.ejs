@@ -110,7 +110,7 @@
   <% memberss.forEach((item, index) => { %>
   <tr  class="genap">
     <% if(optionmember["id"]) { %>
-    <td><%= index + 1 %></td>
+    <td><%= index + (limit * (page -1)) + 1 %></td>
     <% } %>
     <% if(optionmember["name"]) { %>
     <td  id="cekname"><%= item.firstname %></td>
