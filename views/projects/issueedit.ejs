@@ -1,5 +1,6 @@
 <%- include('../partials/header') %>
-<form action="" method="post" enctype="multipart/form-data">
+<form action="" method="post" id="all" enctype="multipart/form-data">
+  <input type="hidden" name="files" value="1">
   <%- include('../partials/navbar') %>
   <br />
   <h1>Edit Issue</h1>
@@ -8,7 +9,7 @@
     <div style="margin-left: -10px;" class="p-2">Tracker</div>
     <div style="margin-left: 140px;" class="p-2">
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="tracker"
@@ -20,7 +21,7 @@
     <label class="form-check-label" for="exampleRadios1"> Bug </label>
   </div>
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="tracker"
@@ -32,7 +33,7 @@
     </label>
   </div>
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="tracker"
@@ -51,7 +52,7 @@
 <div class="mb-3 row">
     <label for="Name" class="col-sm-2 col-form-label">Subject</label>
     <div class="col-sm-10">
-      <input
+      <input required
         type="text"
         value="<%= issue.subject %>"
         class="form-control"
@@ -68,7 +69,7 @@
   <div class="mb-3 row">
     <label for="Name" class="col-sm-2 col-form-label">Description</label>
     <div class="col-sm-10">
-      <textarea
+      <textarea required
         type="text"
         
         class="form-control"
@@ -86,7 +87,7 @@
     <div style="margin-left: -5px;" class="p-2">Status</div>
     <div style="margin-left: 140px;" class="p-2">
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="status"
@@ -98,7 +99,7 @@
     <label class="form-check-label" for="exampleRadios1"> New </label>
   </div>
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="status"
@@ -110,7 +111,7 @@
     </label>
   </div>
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="status"
@@ -123,7 +124,7 @@
   </div>
 
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="status"
@@ -136,7 +137,7 @@
   </div>
 
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="status"
@@ -148,7 +149,7 @@
     </label>
   </div>
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="status"
@@ -167,7 +168,7 @@
     <div style="margin-left: -10px;" class="p-2">Priority</div>
     <div style="margin-left: 140px;" class="p-2">
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="priority"
@@ -179,7 +180,7 @@
     <label class="form-check-label" for="exampleRadios1"> Normal </label>
   </div>
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="priority"
@@ -191,7 +192,7 @@
     </label>
   </div>
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="priority"
@@ -203,7 +204,7 @@
     </label>
   </div>
   <div class="col">
-    <input 
+    <input required
       class="form-check-input"
       type="radio"
       name="priority"
@@ -220,7 +221,7 @@
   <div class="mb-3 row">
     <label for="assignee" class="col-sm-2 col-form-label">Assignee</label>
     <div class="col-sm-10">
-      <select
+      <select required
         class="form-select"
         aria-label="Default select example"
         id="assignee"
@@ -241,7 +242,7 @@
   <div class="mb-3 row">
     <label class="col-sm-2 col-form-label">Start Date</label>
     <div class="col-sm-10">
-      <input
+      <input required
         type="date"
         value="<%= moment(issue.startdate).format('YYYY-MM-DD') %>"
         class="form-control"
@@ -255,7 +256,7 @@
   <div class="mb-3 row">
     <label class="col-sm-2 col-form-label">Due Date</label>
     <div class="col-sm-10">
-      <input
+      <input required
         type="date"
         value="<%= moment(issue.duedate).format('YYYY-MM-DD') %>"
         class="form-control"
@@ -269,7 +270,7 @@
   <div class="mb-3 row">
     <label for="Estimated" class="col-sm-2 col-form-label">Estimated Time</label>
     <div class="col-sm-10">
-      <input
+      <input required
       value="<%= issue.estimatedtime %>"
         type="number"
         class="form-control"
@@ -284,7 +285,7 @@
   <div class="mb-3 row">
     <label for="Done" class="col-sm-2 col-form-label">% Done</label>
     <div class="col-sm-10">
-      <input
+      <input required
       value="<%= issue.done %>"
         type="number"
         class="form-control"
@@ -298,46 +299,71 @@
 
   <div class="mb-3 row">
     <label for="Files" class="col-sm-2 col-form-label">Files</label>
-    <div class="col-sm-10">
+    <div class="col-sm-5">
       <input 
         type="file"
-  
+       
         class="form-control"
         id="Files"
         name="files"
       
         
         />
+        <% if(issue.files && issue.files.length >0) { %>
+          <% issue.files.forEach(files => { %>
+       <a href="<%= `${baseUrl}/images/${files.name}` %>"><img  src="<%= `${baseUrl}/images/${files.name}` %>" width="50"></a> 
+       <% })} %>
       </div>
     </div>
+
+    <div class="mb-3 row" id="btn-add2">
+      <label for="Files" class="col-sm-2"></label>
+      
+     
+        <div class="col-sm-5">
+          <button type="button" id="btn-add" class="btn btn-primary" > <i class="fas fa-plus" aria-hidden="true"></i></button>
+        </div>
+          
+        </div>
     
     <br />
 
-    <table  class="table table-striped">
-      <tr>
-        
-        <th>Image</th>
-      </tr>
-
-      <tr>
-       
-        <td>
-          <% if(issue.files && issue.files.length >0) { %>
-            <ul>
-            <% issue.files.forEach(files => { %>
-          <li><img src="<%= `${baseUrl}/images/${files.name}` %>" width="100"></li>
-           </ul>
-          <% })} %>
-        </td>
-       
-       
-   
-
-    <br>
-
+    
   <button type="submit" class="btn btn-primary">Save</button>
 
   <a class="btn btn-warning" href="/projects/issue/<%= projectid %>">Back</a>
 </form>
+
+<script>
+
+  var input = ` <div class="mb-3 row">
+    <label for="Files" class="col-sm-2 col-form-label"></label>
+    <div class="col-sm-5">
+      <input
+      type="file"
+      
+      class="form-control"
+      id="Files"
+      name="files"
+      
+      
+      />
+      
+      </div>
+      <div class="col-sm-5">
+      <button type="button" id="btn-minus" class="btn btn-primary btn-delete" > <i class="fas fa-minus" aria-hidden="true"></i></button>
+    </div>
+      </div>`
+  
+  $("#btn-add").click(function(){
+  $("#btn-add2").before(input);
+});
+
+$(document).ready(function(){
+  $( "#all" ).on( "click", ".btn-delete", function() {
+ $( this ).closest(".mb-3").remove()
+});
+});
+</script>
 
 <%- include('../partials/footer') %>

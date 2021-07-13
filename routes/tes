@@ -1,0 +1,76 @@
+ router.post(`/issue/:projectid/add`, helpers.isLoggedIn, (req, res) => {
+    const projectid = req.params.projectid;
+    
+    
+    if (!req.files) {
+      return db.query(
+        `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, projectid = $11, author = $12, updateddate = now() where issueid = $13 `,
+      [
+        req.body.tracker,
+        req.body.subject,
+        req.body.description,
+        req.body.status,
+        req.body.priority,
+        req.body.assignee,
+        req.body.startdate,
+        req.body.duedate,
+        req.body.estimatedtime,
+        req.body.done,
+        req.params.projectid,
+        req.session.user.userid,
+        req.params.id,
+      ],
+        (err, editissue) => {
+          if (err) throw err;
+   res.redirect(`/projects/issue/${projectid}`);
+    }
+    )}
+    
+    let fotos = [];
+
+    if (req.files.files) {
+      const file = req.files.files;
+      let files = `${Date.now()}-${file.name}`;
+      fotos.push({ name: files, mimetype: file.mimetype });
+      let uploaddata = path.join(__dirname, `../public/images/${files}`);
+      file.mv(uploaddata, (err, uploaddata) => {
+        if (err) throw err;
+      });
+    }
+    if (req.files.files.length > 1) {
+      const file = req.files.files;
+      file.forEach((item) => {
+        let files = `${Date.now()}-${item.name}`;
+        fotos.push({ name: files, mimetype: item.mimetype });
+        let uploaddata = path.join(__dirname, `../public/images/${files}`);
+        item.mv(uploaddata, (err, uploaddata) => {
+          if (err) throw err;
+        });
+      });
+    }
+  
+    db.query(
+      `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11 , projectid = $12, author = $13, updateddate = now() where issueid = $14 `,
+      [
+        req.body.tracker,
+        req.body.subject,
+        req.body.description,
+        req.body.status,
+        req.body.priority,
+        req.body.assignee,
+        req.body.startdate,
+        req.body.duedate,
+        req.body.estimatedtime,
+        req.body.done,
+        fotos,
+        req.params.projectid,
+        req.session.user.userid,
+        req.params.id,
+      ],
+      (err, editissue) => {
+        if (err) throw err;
+
+        res.redirect(`/projects/issue/${projectid}`);
+      }
+    );
+  });

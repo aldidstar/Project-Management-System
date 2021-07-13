@@ -507,16 +507,59 @@ module.exports = function (db) {
   });
   router.post(`/issue/:projectid/add`, helpers.isLoggedIn, (req, res) => {
     const projectid = req.params.projectid;
-    const file = req.files.files;
-    let fotos = []
-    file.forEach(item => {
-      const files = `${Date.now()}-${item.name}`;
-      let uploaddata = path.join(__dirname, `../public/images/${files}`)
-          item.mv(uploaddata, (err,uploaddata)  => {
+    
+    
+    if (!req.files) {
+      return db.query(
+        `insert into issues (tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done,  projectid, author, createddate)
+       values ($1,$2,$3,$4, $5,$6,$7,$8,$9, $10, $11, $12, now())`,
+        [
+          req.body.tracker,
+          req.body.subject,
+          req.body.description,
+          req.body.status,
+          req.body.priority,
+          req.body.assignee,
+          req.body.startdate,
+          req.body.duedate,
+          req.body.estimatedtime,
+          req.body.done,
+         
+          req.params.projectid,
+          req.session.user.userid,
+        ],
+        (err, addissue) => {
           if (err) throw err;
-          fotos.push({name: files, mimetype:item.mimetype})
-    })
-  });
+   res.redirect(`/projects/issue/${projectid}`);
+    }
+    )}
+    
+    let fotos = [];
+
+    if (req.files.files.length > 1) {
+      
+      const file = req.files.files;
+      file.forEach((item) => {
+        let files = `${Date.now()}-${item.name}`;
+        fotos.push({ name: files, mimetype: item.mimetype });
+        let uploaddata = path.join(__dirname, `../public/images/${files}`);
+        item.mv(uploaddata, (err, uploaddata) => {
+          if (err) throw err;
+        });
+      });
+    }
+
+    else if (req.files.files) {
+      
+      const file = req.files.files;
+      let files = `${Date.now()}-${file.name}`;
+      fotos.push({ name: files, mimetype: file.mimetype });
+      let uploaddata = path.join(__dirname, `../public/images/${files}`);
+      file.mv(uploaddata, (err, uploaddata) => {
+        if (err) throw err;
+      });
+    }
+  
     db.query(
       `insert into issues (tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, projectid, author, createddate)
      values ($1,$2,$3,$4, $5,$6,$7,$8,$9, $10, $11, $12, $13, now())`,
@@ -537,10 +580,8 @@ module.exports = function (db) {
       ],
       (err, addissue) => {
         if (err) throw err;
-        
-    
+
         res.redirect(`/projects/issue/${projectid}`);
-      
       }
     );
   });
@@ -564,7 +605,7 @@ module.exports = function (db) {
     (req, res, next) => {
       const projectid = req.params.projectid;
       let issue = ` select * from issues where projectid=${projectid} and issueid=${req.params.id}`;
-      const baseUrl = `http://${req.headers.host}`
+      const baseUrl = `http://${req.headers.host}`;
       db.query(issue, (err, issue) => {
         if (err) throw err;
         let ambiluser = `select * from users where  userid in (select userid from members where projectid=${projectid} )`;
@@ -576,7 +617,7 @@ module.exports = function (db) {
             projectid,
             ambiluser: ambiluser.rows,
             moment: moment,
-            baseUrl
+            baseUrl,
           });
         });
       });
@@ -585,12 +626,59 @@ module.exports = function (db) {
 
   router.post(`/issue/:projectid/edit/:id`, (req, res, next) => {
     const projectid = req.params.projectid;
-    const file = req.files.files;
+    
+    
+    if (!req.files) {
+      return db.query(
+        `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, projectid = $11, author = $12, updateddate = now() where issueid = $13 `,
+      [
+        req.body.tracker,
+        req.body.subject,
+        req.body.description,
+        req.body.status,
+        req.body.priority,
+        req.body.assignee,
+        req.body.startdate,
+        req.body.duedate,
+        req.body.estimatedtime,
+        req.body.done,
+        req.params.projectid,
+        req.session.user.userid,
+        req.params.id,
+      ],
+        (err, editissue) => {
+          if (err) throw err;
+   res.redirect(`/projects/issue/${projectid}`);
+    }
+    )}
+    
+    let fotos = [];
 
+    
+     if (req.files.files.length > 1) {
+    
+      const file = req.files.files;
+      file.forEach((item) => {
+        let files = `${Date.now()}-${item.name}`;
+        fotos.push({ name: files, mimetype: item.mimetype });
+        let uploaddata = path.join(__dirname, `../public/images/${files}`);
+        item.mv(uploaddata, (err, uploaddata) => {
+          if (err) throw err;
+        });
+      });
+    }
 
-    const files = `${Date.now()}-${file.name}`;
-
-    console.log(file);
+    else if (req.files.files) {
+      
+      const file = req.files.files;
+      let files = `${Date.now()}-${file.name}`;
+      fotos.push({ name: files, mimetype: file.mimetype });
+      let uploaddata = path.join(__dirname, `../public/images/${files}`);
+      file.mv(uploaddata, (err, uploaddata) => {
+        if (err) throw err;
+      });
+    }
+  
     db.query(
       `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11 , projectid = $12, author = $13, updateddate = now() where issueid = $14 `,
       [
@@ -604,20 +692,25 @@ module.exports = function (db) {
         req.body.duedate,
         req.body.estimatedtime,
         req.body.done,
-        [{name: files, mimetype:file.mimetype}],
+        fotos,
         req.params.projectid,
         req.session.user.userid,
         req.params.id,
       ],
       (err, editissue) => {
         if (err) throw err;
-        let uploaddata = path.join(__dirname, `../public/images/${files}`)
-        file.mv(uploaddata, (err,uploaddata)  => {
-        if (err) throw err;
+
         res.redirect(`/projects/issue/${projectid}`);
-      });
       }
     );
+  });
+
+
+  router.get(`/activity/:projectid`, (req, res) => {
+    const projectid = req.params.projectid;
+    res.render(`projects/activity`, {
+      projectid,
+    });
   });
   return router;
 };
