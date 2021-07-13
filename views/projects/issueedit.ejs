@@ -1,6 +1,6 @@
 <%- include('../partials/header') %>
 <form action="" method="post" id="all" enctype="multipart/form-data">
-  <input type="hidden" name="files" value="1">
+
   <%- include('../partials/navbar') %>
   <br />
   <h1>Edit Issue</h1>
@@ -300,6 +300,17 @@
   <div class="mb-3 row">
     <label for="Files" class="col-sm-2 col-form-label">Files</label>
     <div class="col-sm-5">
+      <div class="row">
+        <% if(issue.files && issue.files.length >0) { %>
+          <% issue.files.forEach(files => { %>
+           
+            <div class="col-sm-3" >
+              <a  href="<%= `${baseUrl}/images/${files.name}` %>" target="blank"><img  src="<%= `${baseUrl}/images/${files.name}` %>" width="50"></a> 
+              <button type="button" id="btn-minus" class="btn btn-primary btn-edit" > <i class="fas fa-minus"  aria-hidden="true"></i></button>
+            </div>
+       <% })} %>
+      </div>
+      
       <input 
         type="file"
        
@@ -309,10 +320,7 @@
       
         
         />
-        <% if(issue.files && issue.files.length >0) { %>
-          <% issue.files.forEach(files => { %>
-       <a href="<%= `${baseUrl}/images/${files.name}` %>"><img  src="<%= `${baseUrl}/images/${files.name}` %>" width="50"></a> 
-       <% })} %>
+        <input type="hidden" name="files" value="">
       </div>
     </div>
 
@@ -339,6 +347,7 @@
   var input = ` <div class="mb-3 row">
     <label for="Files" class="col-sm-2 col-form-label"></label>
     <div class="col-sm-5">
+      
       <input
       type="file"
       
@@ -362,6 +371,12 @@
 $(document).ready(function(){
   $( "#all" ).on( "click", ".btn-delete", function() {
  $( this ).closest(".mb-3").remove()
+});
+});
+
+$(document).ready(function(){
+  $( "#all" ).on( "click", ".btn-edit", function() {
+ $( this ).closest(".col-sm-3").remove()
 });
 });
 </script>
