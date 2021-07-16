@@ -13,17 +13,16 @@
 
       
       <h4>Activity</h4>
- 
+      <br>
+      <% for(const dayName in result) { %>
+        <p><%= dayName == moment(new Date()).format('dddd') ? ' Today' : dayName %></p>
       <ul>
-        
-        
-             <% activity.forEach((item, index) => { %>
-            <%= ` ${moment(item.time).format('dddd')}` %>
-          
+        <% result[dayName].data.forEach(item => { %>
           <li>  <%= ` ${moment(item.time).format('HH:mm')} ${item.title} #${item.issueid} (${item.description}): Description, author: ${item.firstname}`  %></li>
           <% }) %>
           
       </ul>
+      <%  } %>
       <br>
 
   

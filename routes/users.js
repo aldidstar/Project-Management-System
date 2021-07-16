@@ -10,7 +10,7 @@ const { query } = require("express");
 
 module.exports = function (db) {
   let namePages = "users";
-router.get('/', function(req, res, next) {
+router.get('/', helpers.isAdmin, function(req, res, next) {
   res.render('users/users', {
     namePages
   });
