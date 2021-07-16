@@ -6,8 +6,12 @@ const saltRounds = 10;
 const helpers = require("../helpers/util");
 
 module.exports = function (db) {
+  let namePages = "profile";
   router.get("/", helpers.isLoggedIn, (req, res, next) => {
+   
+
     const { position } = req.query;
+    
     var type = req.query.type;
     let sql = `select * from users where email= '${req.session.user.email}'`;
     // let sql = `select * from users `;
@@ -21,10 +25,13 @@ module.exports = function (db) {
           query: req.query,
           type,
           info: req.flash("info"),
+          namePages
         });
       }
     });
   });
+
+
 
   router.post("/", helpers.isLoggedIn, (req, res, next) => {
     

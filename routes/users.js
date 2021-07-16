@@ -1,11 +1,22 @@
-var express = require('express');
-var router = express.Router();
 
-/* GET users listing. */
+var express = require("express");
+var router = express.Router();
+const bcrypt = require("bcrypt");
+const path = require("path");
+const saltRounds = 10;
+const helpers = require("../helpers/util");
+var moment = require("moment");
+const { query } = require("express");
+
+module.exports = function (db) {
+  let namePages = "users";
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  res.render('users/users', {
+    namePages
+  });
 });
 
-module.exports = router;
+return router;
+};
 
 

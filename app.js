@@ -39,7 +39,7 @@ if (isDevelopment) {
 var indexRouter = require('./routes/index')(pool);
 var projectsRouter = require('./routes/projects')(pool);
 var profileRouter = require('./routes/profile')(pool);
-var usersRouter = require('./routes/users');
+var usersRouter = require('./routes/users')(pool);
 
 var app = express();
 

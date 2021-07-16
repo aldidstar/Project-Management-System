@@ -299,15 +299,25 @@
 
   <div class="mb-3 row">
     <label for="Files" class="col-sm-2 col-form-label">Files</label>
+    
     <div class="col-sm-5">
       <div class="row">
         <% if(issue.files && issue.files.length >0) { %>
           <% issue.files.forEach(files => { %>
-           
+            <% if  (files.mimetype== 'image/png') {%>
             <div class="col-sm-3" >
-              <a  href="<%= `${baseUrl}/images/${files.name}` %>" target="blank"><img  src="<%= `${baseUrl}/images/${files.name}` %>" width="50"></a> 
+              <input type="hidden" name="files" value=" <%= JSON.stringify(files) %>">
+              <a   href="<%= `${baseUrl}/images/${files.name}` %>" target="blank"><img  src="<%= `${baseUrl}/images/${files.name}` %>" width="50"></a> 
               <button type="button" id="btn-minus" class="btn btn-primary btn-edit" > <i class="fas fa-minus"  aria-hidden="true"></i></button>
             </div>
+            <%  }%>
+            <% if  (files.mimetype != 'image/png') {%>
+              <div class="col-sm-3" >
+                <input type="hidden" name="files" value=" <%= JSON.stringify(files) %>">
+                <a   href="<%= `${baseUrl}/images/${files.name}` %>" target="blank"><%= `${baseUrl}/images/${files.name}` %></a> 
+                <button type="button" id="btn-minus" class="btn btn-primary btn-edit" > <i class="fas fa-minus"  aria-hidden="true"></i></button>
+              </div>
+              <%  }%>
        <% })} %>
       </div>
       
@@ -320,9 +330,13 @@
       
         
         />
-        <input type="hidden" name="files" value="">
+       
+        
+        
       </div>
     </div>
+
+    
 
     <div class="mb-3 row" id="btn-add2">
       <label for="Files" class="col-sm-2"></label>

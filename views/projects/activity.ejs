@@ -6,4 +6,29 @@
   <%- include('../partials/navbar') %>
 
   <%- include('../partials/sidebar') %>
+
+  <h1 style="font-size: 50px">Activity</h1>
+  <br>
+ 
+
+  <div class="container-issue">
+      
+      <h4>Activity</h4>
+ 
+      <ul>
+
+        <% for (let i = 0; i < activity.length; i++) { %>
+          
+            <%= ` ${moment(activity[i].days).format('dddd')}` %>
+          
+          <li>  <%= ` ${moment(activity[i].time).format('HH:mm')} ${activity[i].title} #${activity[i].issueid} (${activity[i].description}): Description, author: ${activity[i].firstname}`  %></li>
+          <% } %>
+          
+      </ul>
+      <br>
+  </div>
+
+  
+
+
   <%- include('../partials/footer') %>

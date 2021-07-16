@@ -8,6 +8,7 @@ var moment = require("moment");
 const { query } = require("express");
 
 module.exports = function (db) {
+  let namePages = `projects`;
   router.get("/", helpers.isLoggedIn, function (req, res, next) {
     const { id, name, member } = req.query;
 
@@ -79,6 +80,7 @@ module.exports = function (db) {
                   page,
                   pages,
                   url,
+                  namePages,
                 });
               }
             );
@@ -132,7 +134,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/delete/:id", (req, res) => {
+  router.get("/delete/:id", helpers.isLoggedIn, (req, res) => {
     let sql = `DELETE FROM members WHERE projectid=${req.params.id}`;
     console.log(sql);
     db.query(sql, (err) => {
@@ -148,7 +150,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/edit/:id", (req, res) => {
+  router.get("/edit/:id", helpers.isLoggedIn, (req, res) => {
     let sql = `select * from projects where projectid=${req.params.id}`;
     db.query(sql, (err, row) => {
       if (err) throw err;
@@ -173,7 +175,7 @@ module.exports = function (db) {
     });
   });
 
-  router.post("/edit/:id", (req, res) => {
+  router.post("/edit/:id", helpers.isLoggedIn, (req, res) => {
     let sql = `DELETE FROM members WHERE projectid=${req.params.id}`;
 
     db.query(sql, (err) => {
@@ -195,7 +197,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/overview/:projectid", (req, res) => {
+  router.get("/overview/:projectid", helpers.isLoggedIn, (req, res) => {
     const projectid = req.params.projectid;
 
     let sql = `select * from projects where projectid=${projectid}`;
@@ -205,16 +207,51 @@ module.exports = function (db) {
 
       db.query(sql, (err, memberss) => {
         if (err) throw err;
+        let totalBug = `select count(*) from issues  where projectid=${req.params.projectid} and tracker = 'Bug'`;
+        db.query(totalBug, (err, totalBug) => {
+          if (err) throw err;
+
+          let closedbug = `select count(*) from issues  where projectid=${req.params.projectid} and not status = 'Closed' and tracker = 'Bug'`;
+          db.query(closedbug, (err, closedbug) => {
+            if (err) throw err;
+
+            let totalFeature = `select count(*) from issues  where projectid=${req.params.projectid} and tracker = 'Feature'`;
+        db.query(totalFeature, (err, totalFeature) => {
+          if (err) throw err;
+
+          let closedFeature = `select count(*) from issues  where projectid=${req.params.projectid} and not status = 'Closed' and tracker = 'Feature'`;
+          db.query(closedFeature, (err, closedFeature) => {
+            if (err) throw err;
+
+            let totalSupport = `select count(*) from issues  where projectid=${req.params.projectid} and tracker = 'Support'`;
+        db.query(totalSupport, (err, totalSupport) => {
+          if (err) throw err;
+
+          let closedSupport = `select count(*) from issues  where projectid=${req.params.projectid} and not status = 'Closed' and tracker = 'Support'`;
+          db.query(closedSupport, (err, closedSupport) => {
+            if (err) throw err;
 
         res.render("projects/overview", {
           nama: row.rows[0],
           memberss: memberss.rows,
-
+          closedbug: closedbug.rows[0].count,
+          totalBug: totalBug.rows[0].count,
+          totalFeature: totalFeature.rows[0].count,
+          closedFeature: closedFeature.rows[0].count,
+          totalSupport: totalSupport.rows[0].count,
+          closedSupport: closedSupport.rows[0].count,
           projectid,
         });
       });
     });
   });
+});
+});
+});
+});
+});
+});
+
 
   router.get(
     "/members/:projectid",
@@ -349,7 +386,7 @@ module.exports = function (db) {
     });
   });
 
-  router.get("/members/:projectid/delete/:id", (req, res) => {
+  router.get("/members/:projectid/delete/:id", helpers.isLoggedIn, (req, res) => {
     const projectid = req.params.projectid;
     const id = req.params.id;
     let sql = `DELETE FROM members WHERE userid=${id}`;
@@ -507,8 +544,7 @@ module.exports = function (db) {
   });
   router.post(`/issue/:projectid/add`, helpers.isLoggedIn, (req, res) => {
     const projectid = req.params.projectid;
-    
-    
+
     if (!req.files) {
       return db.query(
         `insert into issues (tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done,  projectid, author, createddate)
@@ -524,20 +560,20 @@ module.exports = function (db) {
           req.body.duedate,
           req.body.estimatedtime,
           req.body.done,
-         
+
           req.params.projectid,
           req.session.user.userid,
         ],
         (err, addissue) => {
           if (err) throw err;
-   res.redirect(`/projects/issue/${projectid}`);
+          res.redirect(`/projects/issue/${projectid}`);
+        }
+      );
     }
-    )}
-    
+
     let fotos = [];
 
     if (req.files.files.length > 1) {
-      
       const file = req.files.files;
       file.forEach((item) => {
         let files = `${Date.now()}-${item.name}`;
@@ -547,10 +583,7 @@ module.exports = function (db) {
           if (err) throw err;
         });
       });
-    }
-
-    else if (req.files.files) {
-      
+    } else if (req.files.files) {
       const file = req.files.files;
       let files = `${Date.now()}-${file.name}`;
       fotos.push({ name: files, mimetype: file.mimetype });
@@ -559,7 +592,7 @@ module.exports = function (db) {
         if (err) throw err;
       });
     }
-  
+
     db.query(
       `insert into issues (tracker, subject, description, status, priority, assignee, startdate, duedate, estimatedtime, done, files, projectid, author, createddate)
      values ($1,$2,$3,$4, $5,$6,$7,$8,$9, $10, $11, $12, $13, now())`,
@@ -606,6 +639,7 @@ module.exports = function (db) {
       const projectid = req.params.projectid;
       let issue = ` select * from issues where projectid=${projectid} and issueid=${req.params.id}`;
       const baseUrl = `http://${req.headers.host}`;
+
       db.query(issue, (err, issue) => {
         if (err) throw err;
         let ambiluser = `select * from users where  userid in (select userid from members where projectid=${projectid} )`;
@@ -624,93 +658,276 @@ module.exports = function (db) {
     }
   );
 
-  router.post(`/issue/:projectid/edit/:id`, (req, res, next) => {
+  router.post(`/issue/:projectid/edit/:id`, helpers.isLoggedIn, (req, res, next) => {
     const projectid = req.params.projectid;
     
     
-    if (!req.files) {
+    if (!req.files && !req.body.files) {
+     
       return db.query(
-        `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, projectid = $11, author = $12, updateddate = now() where issueid = $13 `,
-      [
-        req.body.tracker,
-        req.body.subject,
-        req.body.description,
-        req.body.status,
-        req.body.priority,
-        req.body.assignee,
-        req.body.startdate,
-        req.body.duedate,
-        req.body.estimatedtime,
-        req.body.done,
-        req.params.projectid,
-        req.session.user.userid,
-        req.params.id,
-      ],
+        `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, projectid = $11, author = $12, updateddate = now(), files = null where issueid = $13 returning * `,
+        [
+          req.body.tracker,
+          req.body.subject,
+          req.body.description,
+          req.body.status,
+          req.body.priority,
+          req.body.assignee,
+          req.body.startdate,
+          req.body.duedate,
+          req.body.estimatedtime,
+          req.body.done,
+          req.params.projectid,
+          req.session.user.userid,
+          req.params.id,
+        ],
         (err, editissue) => {
           if (err) throw err;
-   res.redirect(`/projects/issue/${projectid}`);
-    }
-    )}
-    
-    let fotos = [];
+               
+          if (req.body.status == 'Closed') {
+              db.query( `update issues set closeddate = now() where issueid = ${req.params.id}`,
+            (err, closedissue) => {
+              if (err) throw err;
+            } )
+          }
+          db.query( `insert into activity (time, title, description, author, issueid) Values (now(), '${editissue.rows[0].subject}', '${editissue.rows[0].status}' ,  ${editissue.rows[0].author} , ${req.params.id})`,
+          (err, insertactivity) => {
+            if (err) throw err;
+            res.redirect(`/projects/issue/${projectid}`);
+          } )
+        }
+      );
+    } 
+    // const file = req.files.files;
+    else if (!req.files && req.body.files) {
+      let fotos = [];
 
-    
-     if (req.files.files.length > 1) {
-    
-      const file = req.files.files;
-      file.forEach((item) => {
-        let files = `${Date.now()}-${item.name}`;
-        fotos.push({ name: files, mimetype: item.mimetype });
+      if (typeof req.body.files == "object") {
+        req.body.files.forEach((itemm) => {
+          fotos.push(itemm);
+        });
+      }
+      else {
+        fotos.push(req.body.files);
+      }
+
+      db.query(
+        `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11 , projectid = $12, author = $13, updateddate = now() where issueid = $14 returning * `,
+        [
+          req.body.tracker,
+          req.body.subject,
+          req.body.description,
+          req.body.status,
+          req.body.priority,
+          req.body.assignee,
+          req.body.startdate,
+          req.body.duedate,
+          req.body.estimatedtime,
+          req.body.done,
+          fotos,
+          req.params.projectid,
+          req.session.user.userid,
+          req.params.id,
+        ],
+        (err, editissue) => {
+          if (err) throw err;
+          if (req.body.status == 'Closed') {
+            db.query( `update issues set closeddate = now() where issueid = ${req.params.id}`,
+            (err, closedissue) => {
+              if (err) throw err;
+            } )
+          }
+          console.log(editissue.rows[0])
+          let sql = `insert into activity (time, title, description, author, issueid) Values (now(), '${editissue.rows[0].subject}', '${editissue.rows[0].status}' ,  ${editissue.rows[0].author} , ${req.params.id})`
+          console.log("sql",sql)
+          db.query(sql ,
+          (err, insertactivity) => {
+            if (err) throw err;
+            res.redirect(`/projects/issue/${projectid}`);
+          } )
+
+        }
+      );
+
+
+    } 
+    else if (req.files.files && !req.body.files) {
+      let fotos = [];
+      if (req.files.files.length > 1) {
+        const file = req.files.files;
+        file.forEach((item) => {
+          let files = `${Date.now()}-${item.name}`;
+          fotos.push({ name: files, mimetype: item.mimetype });
+          let uploaddata = path.join(__dirname, `../public/images/${files}`);
+          item.mv(uploaddata, (err, uploaddata) => {
+            if (err) throw err;
+          });
+        });
+      } else {
+        const file = req.files.files;
+        let files = `${Date.now()}-${file.name}`;
+        fotos.push({ name: files, mimetype: file.mimetype });
+
         let uploaddata = path.join(__dirname, `../public/images/${files}`);
-        item.mv(uploaddata, (err, uploaddata) => {
+        file.mv(uploaddata, (err, uploaddata) => {
           if (err) throw err;
         });
-      });
-    }
-
-    else if (req.files.files) {
-      
-      const file = req.files.files;
-      let files = `${Date.now()}-${file.name}`;
-      fotos.push({ name: files, mimetype: file.mimetype });
-      let uploaddata = path.join(__dirname, `../public/images/${files}`);
-      file.mv(uploaddata, (err, uploaddata) => {
-        if (err) throw err;
-      });
-    }
-  
-    db.query(
-      `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11 , projectid = $12, author = $13, updateddate = now() where issueid = $14 `,
-      [
-        req.body.tracker,
-        req.body.subject,
-        req.body.description,
-        req.body.status,
-        req.body.priority,
-        req.body.assignee,
-        req.body.startdate,
-        req.body.duedate,
-        req.body.estimatedtime,
-        req.body.done,
-        fotos,
-        req.params.projectid,
-        req.session.user.userid,
-        req.params.id,
-      ],
-      (err, editissue) => {
-        if (err) throw err;
-
-        res.redirect(`/projects/issue/${projectid}`);
       }
-    );
+
+      db.query(
+        `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11 , projectid = $12, author = $13, updateddate = now() where issueid = $14 returning * `,
+        [
+          req.body.tracker,
+          req.body.subject,
+          req.body.description,
+          req.body.status,
+          req.body.priority,
+          req.body.assignee,
+          req.body.startdate,
+          req.body.duedate,
+          req.body.estimatedtime,
+          req.body.done,
+          fotos,
+          req.params.projectid,
+          req.session.user.userid,
+          req.params.id,
+        ],
+        (err, editissue) => {
+          if (err) throw err;
+          if (req.body.status == 'Closed') {
+             db.query( `update issues set closeddate = now() where issueid = ${req.params.id}`,
+            (err, closedissue) => {
+              if (err) throw err;
+            } )
+          }
+          
+          db.query( `insert into activity (time, title, description, author, issueid) Values (now(), '${editissue.rows[0].subject}', '${editissue.rows[0].status}' ,  ${editissue.rows[0].author} , ${req.params.id})`,
+          (err, insertactivity) => {
+            if (err) throw err;
+            res.redirect(`/projects/issue/${projectid}`);
+          } )
+        }
+      );
+    } else if (req.files.files && req.body.files) {
+      let fotos = [];
+
+      if (req.files.files.length > 1 && typeof req.body.files == "object") {
+        const file = req.files.files;
+        file.forEach((item) => {
+          let files = `${Date.now()}-${item.name}`;
+          fotos.push({ name: files, mimetype: item.mimetype });
+          let uploaddata = path.join(__dirname, `../public/images/${files}`);
+          item.mv(uploaddata, (err, uploaddata) => {
+            if (err) throw err;
+          });
+        });
+        req.body.files.forEach((itemm) => {
+          fotos.push(itemm);
+        });
+      } else if (req.files.files && typeof req.body.files == "object") {
+        const file = req.files.files;
+        let files = `${Date.now()}-${file.name}`;
+        fotos.push({ name: files, mimetype: file.mimetype });
+
+        let uploaddata = path.join(__dirname, `../public/images/${files}`);
+        file.mv(uploaddata, (err, uploaddata) => {
+          if (err) throw err;
+        });
+        req.body.files.forEach((itemm) => {
+          fotos.push(itemm);
+        });
+      } else if (req.files.files.length > 1 && req.body.files) {
+        const file = req.files.files;
+        file.forEach((item) => {
+          let files = `${Date.now()}-${item.name}`;
+          fotos.push({ name: files, mimetype: item.mimetype });
+          let uploaddata = path.join(__dirname, `../public/images/${files}`);
+          item.mv(uploaddata, (err, uploaddata) => {
+            if (err) throw err;
+          });
+        });
+        fotos.push(req.body.files);
+      } else {
+        const file = req.files.files;
+        let files = `${Date.now()}-${file.name}`;
+        fotos.push({ name: files, mimetype: file.mimetype });
+
+        let uploaddata = path.join(__dirname, `../public/images/${files}`);
+        file.mv(uploaddata, (err, uploaddata) => {
+          if (err) throw err;
+        });
+        fotos.push(req.body.files);
+      }
+      db.query(
+        `update issues set tracker = $1, subject = $2, description = $3, status =  $4, priority = $5, assignee = $6, startdate = $7, duedate = $8, estimatedtime = $9, done = $10, files = $11 , projectid = $12, author = $13, updateddate = now() where issueid = $14 returning * `,
+        [
+          req.body.tracker,
+          req.body.subject,
+          req.body.description,
+          req.body.status,
+          req.body.priority,
+          req.body.assignee,
+          req.body.startdate,
+          req.body.duedate,
+          req.body.estimatedtime,
+          req.body.done,
+          fotos,
+          req.params.projectid,
+          req.session.user.userid,
+          req.params.id,
+        ],
+        (err, editissue) => {
+          if (err) throw err;
+          if (req.body.status == 'Closed') {
+              db.query( `update issues set closeddate = now() where issueid = ${req.params.id}`,
+            (err, closedissue) => {
+              if (err) throw err;
+            } )
+          }
+          db.query( `insert into activity (time, title, description, author, issueid) Values (now(), '${editissue.rows[0].subject}','${editissue.rows[0].status}' ,  ${editissue.rows[0].author} , ${req.params.id})`,
+          (err, insertactivity) => {
+            if (err) throw err;
+            res.redirect(`/projects/issue/${projectid}`);
+          } )
+
+  
+        }
+      );
+    }
+
+   
   });
 
+  router.get(`/activity/:projectid`, helpers.isLoggedIn, (req, res) => {
+    
+    var timeFrom = (X) => {
+      var dates = [];
+      for (let I = 0; I < Math.abs(X); I++) {
+          dates.push(new Date(new Date().getTime() - ((X >= 0 ? I : (I - I - I)) * 24 * 60 * 60 * 1000)).toLocaleString());
+      }
+      return dates;
+  }
 
-  router.get(`/activity/:projectid`, (req, res) => {
     const projectid = req.params.projectid;
-    res.render(`projects/activity`, {
-      projectid,
-    });
+    let activity = `SELECT activity.time as time , activity.title as title, activity.issueid as issueid, activity.description as description, users.firstname as firstname, DATE_PART('day', now()::timestamp - time::timestamp) as days FROM  (( activity INNER JOIN issues ON issues.issueid = activity.issueid) INNER JOIN users ON users.userid = activity.author) where projectid = ${projectid} and time between (NOW() - INTERVAL '7 day') and time order by time`
+    db.query(activity, (err, activity) => {
+      if (err) throw err;
+      res.render(`projects/activity`, {
+        projectid,
+        activity: activity.rows,
+        moment: moment,
+        timeFrom
+      });
+    })
   });
+
+//   SELECT 
+//   activityid,
+//   time,
+//   DATE_PART('day', now()::timestamp - time::timestamp) as days
+// FROM
+//   activity where time between (NOW() - INTERVAL '7 day') and time
+
+
   return router;
 };
