@@ -17,10 +17,10 @@
     <div class="col-sm-10">
       <input
         type="number"
-        value="<%= query.id %>"
+        value="<%= query.userid %>"
         class="form-control"
         id="ID"
-        name="id"
+        name="userid"
         placeholder="ID"
         disabled
       />
@@ -33,10 +33,10 @@
     <div class="col-sm-10">
       <input
         type="text"
-        value="<%= query.name %>"
+        value="<%= query.firstname %>"
         class="form-control"
         id="Name"
-        name="name"
+        name="firstname"
         placeholder="Name"
         disabled
       />
@@ -45,19 +45,19 @@
 
   <input onclick="myFunction3()" type="checkbox" id="myCheck3" />
   <div class="mb-3 row">
-    <label for="Member" class="col-sm-2 col-form-label">Member</label>
+    <label for="Member" class="col-sm-2 col-form-label">Position</label>
     <div class="col-sm-10">
       <select
       class="form-select"
       aria-label="Default select example"
       id="Member"
-      name="member"
+      name="position"
      
       disabled
       >
       <option selected>Open this select menu</option>
-      <% memberss.forEach((item, index) => { %>
-        <option value="<%= item.userid %>" <%= query.member == item.userid ? ' selected' : '' %>><%= item.firstname %></option>
+      <% nama.forEach((item, index) => { %>
+        <option value="<%= item.userid %>" <%= query.position == item.userid ? ' selected' : '' %>><%= item.position %></option>
         <% }) %>
       </select>
     </div>
@@ -76,33 +76,33 @@
    
     <div class="col">
       <input
-        name="projectid"
+        name="userid"
         class="form-check-input"
         type="checkbox"
         id="flexCheckDefault"
-        <%= options["projectid"] ? ' checked' : ''  %>
+        <%= options["userid"] ? ' checked' : ''  %>
       />
       <label class="form-check-label" for="flexCheckDefault"> ID </label>
     </div>
     <div class="col">
       <input
-        name="name"
+        name="firstname"
         class="form-check-input"
         type="checkbox"
         id="flexCheckChecked"
-        <%= options["name"] ? ' checked' : ''  %>
+        <%= options["firstname"] ? ' checked' : ''  %>
       />
       <label class="form-check-label" for="flexCheckChecked"> Name </label>
     </div>
     <div class="col">
       <input
-        name="members"
+        name="position"
         class="form-check-input"
         type="checkbox"
         id="flexCheckChecked"
-        <%= options["members"] ? ' checked' : ''  %>
+        <%= options["position"] ? ' checked' : ''  %>
       />
-      <label class="form-check-label" for="flexCheckChecked"> Member </label>
+      <label class="form-check-label" for="flexCheckChecked"> Position </label>
     </div>
   </div>
 </div>
@@ -114,36 +114,31 @@
 
 <table  class="table table-striped">
   <tr>
-    <% if(options["projectid"]) { %>
+    <% if(options["userid"]) { %>
     <th  id="checkid">ID</th>
     <% } %>
-    <% if(options["name"]) { %>
+    <% if(options["firstname"]) { %>
     <th  id="checkname">Name</th>
     <% } %>
-    <% if(options["members"]) { %>
+    <% if(options["position"]) { %>
     <th  id="checkname">Member</th>
     <% } %>
     <th>Action</th>
   </tr>
   <% nama.forEach((item, index) => { %>
   <tr  class="genap">
-    <% if(options["projectid"]) { %>
-    <td  id="cekid">
-     
-      <a style="text-decoration: none;" href="/projects/overview/<%= item.projectid%>"><%= item.projectid %></a></td>
-     
+    <% if(options["userid"]) { %>
+    <td  id="cekid"> <%= item.userid %></td>  
       <% } %>
-    <% if(options["name"]) { %>
-    <td  id="cekname"><%= item.name %></td>
+    <% if(options["firstname"]) { %>
+    <td  id="cekname"><%= item.firstname %></td>
     <% } %>
-    <% if(options["members"]) { %>
-    <td  id="cekname"><%= item.members %></td>
+    <% if(options["position"]) { %>
+    <td  id="cekname"><%= item.position %></td>
     <% } %>
     <td>
       <a class="btn btn-success" href="/projects/edit/<%= item.projectid%>">edit</a>
-      <% if(session.role == 'admin') { %>
       <a class="btn btn-danger" href="/projects/delete/<%= item.projectid%>">delete</a>
-      <% } %>
     </td>
   </tr>
   <% }) %>
@@ -205,3 +200,8 @@
 </script>
 
 <%- include('../partials/footer') %>
+
+
+<% if(info.length > 0) { %>
+  <%= info %>
+  <% } %>

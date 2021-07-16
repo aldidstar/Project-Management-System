@@ -10,6 +10,7 @@ const { query } = require("express");
 module.exports = function (db) {
   let namePages = `projects`;
   router.get("/", helpers.isLoggedIn, function (req, res, next) {
+    const session = req.session.user
     const { id, name, member } = req.query;
 
     const url = req.url == "/" ? "/projects/?page=1" : `/projects${req.url}`;
@@ -81,6 +82,7 @@ module.exports = function (db) {
                   pages,
                   url,
                   namePages,
+                  session
                 });
               }
             );
@@ -102,12 +104,16 @@ module.exports = function (db) {
   });
 
   router.get("/add", helpers.isLoggedIn, (req, res) => {
+    const session = req.session.user
     let sql = `select * from users`;
 
     db.query(sql, (err, memberss) => {
       if (err) throw err;
       res.render("projects/add", {
         memberss: memberss.rows,
+        session,
+        namePages
+       
       });
     });
   });
@@ -126,7 +132,7 @@ module.exports = function (db) {
           sql += values;
         }
       }
-      console.log(sql);
+      
       db.query(sql, (err) => {
         if (err) throw err;
         res.redirect("/projects");
@@ -135,13 +141,14 @@ module.exports = function (db) {
   });
 
   router.get("/delete/:id", helpers.isLoggedIn, (req, res) => {
+    const session = req.session.user
     let sql = `DELETE FROM members WHERE projectid=${req.params.id}`;
-    console.log(sql);
+    
     db.query(sql, (err) => {
       if (err) throw err;
 
       let sql = `DELETE FROM projects WHERE projectid=${req.params.id}`;
-      console.log(sql);
+     
       db.query(sql, (err) => {
         if (err) throw err;
       });
@@ -151,6 +158,7 @@ module.exports = function (db) {
   });
 
   router.get("/edit/:id", helpers.isLoggedIn, (req, res) => {
+    const session = req.session.user
     let sql = `select * from projects where projectid=${req.params.id}`;
     db.query(sql, (err, row) => {
       if (err) throw err;
@@ -161,7 +169,7 @@ module.exports = function (db) {
 
         let sql = `select projects.projectid as projectid, projects.name, ARRAY_AGG (
           firstname ORDER BY firstname) as members from members Inner JOIN projects USING (projectid) Inner JOIN users USING (userid) WHERE projectid=${req.params.id} GROUP BY projects.projectid, projects.name ORDER BY projectid`;
-        console.log(sql);
+        
         db.query(sql, (err, membersss) => {
           if (err) throw err;
 
@@ -169,6 +177,9 @@ module.exports = function (db) {
             nama: row.rows[0],
             memberss: memberss.rows,
             membersss: membersss.rows[0],
+            session,
+            namePages
+            
           });
         });
       });
@@ -198,6 +209,7 @@ module.exports = function (db) {
   });
 
   router.get("/overview/:projectid", helpers.isLoggedIn, (req, res) => {
+    const session = req.session.user
     const projectid = req.params.projectid;
 
     let sql = `select * from projects where projectid=${projectid}`;
@@ -241,6 +253,9 @@ module.exports = function (db) {
           totalSupport: totalSupport.rows[0].count,
           closedSupport: closedSupport.rows[0].count,
           projectid,
+          session,
+          namePages
+         
         });
       });
     });
@@ -257,13 +272,14 @@ module.exports = function (db) {
     "/members/:projectid",
     helpers.isLoggedIn,
     function (req, res, next) {
+      const session = req.session.user
       const { id, name, role } = req.query;
       const projectid = req.params.projectid;
       const url =
         req.url == `/members/${projectid}`
           ? `/projects/members/${projectid}?page=1`
           : `/projects${req.url}`;
-      console.log(req.url);
+   
       const page = parseInt(req.query.page || 1);
       const limit = 2;
 
@@ -304,11 +320,11 @@ module.exports = function (db) {
           )}`;
         }
         filter += ` limit ${limit} offset ${offset}`;
-        console.log(filter);
+        
         db.query(filter, (err, memberss) => {
           if (err) throw err;
           let sql = `select * from users`;
-          console.log(sql);
+         
           db.query(sql, (err, row) => {
             if (err) throw err;
 
@@ -332,6 +348,8 @@ module.exports = function (db) {
                     url,
                     projectid,
                     limit,
+                    session,
+                    namePages
                   });
                 }
               );
@@ -344,7 +362,7 @@ module.exports = function (db) {
 
   router.post("/members/:projectid", helpers.isLoggedIn, (req, res) => {
     const { id, name, role } = req.body;
-    console.log(req.body);
+ 
     const projectid = req.params.projectid;
     db.query(
       `update users set optionmember = $1 where email = $2 `,
@@ -357,9 +375,10 @@ module.exports = function (db) {
   });
 
   router.get("/members/:projectid/add", helpers.isLoggedIn, (req, res) => {
+    const session = req.session.user
     const projectid = req.params.projectid;
     let sql = `select * from users where not users.userid in (select members.userid from members where projectid=${projectid})`;
-    console.log(sql);
+
 
     db.query(sql, (err, users) => {
       if (err) throw err;
@@ -370,6 +389,8 @@ module.exports = function (db) {
           users: users.rows,
           members: members.rows,
           projectid,
+          session,
+          namePages
         });
       });
     });
@@ -387,10 +408,11 @@ module.exports = function (db) {
   });
 
   router.get("/members/:projectid/delete/:id", helpers.isLoggedIn, (req, res) => {
+    const session = req.session.user
     const projectid = req.params.projectid;
     const id = req.params.id;
     let sql = `DELETE FROM members WHERE userid=${id}`;
-    console.log(sql);
+
     db.query(sql, (err) => {
       if (err) throw err;
 
@@ -399,26 +421,29 @@ module.exports = function (db) {
   });
 
   router.get("/members/:projectid/edit/:id", helpers.isLoggedIn, (req, res) => {
+    const session = req.session.user
     let memberedit = req.params.id;
     const projectid = req.params.projectid;
     let sql = `select users.userid, users.firstname, members.role from users Inner JOIN members ON  users.userid = members.userid where members.userid=${memberedit} and projectid=${projectid}`;
 
     db.query(sql, (err, row) => {
       if (err) throw err;
-      console.log(row.rows[0].role);
+     
       let sql = `select * from users`;
       db.query(sql, (err, members) => {
         if (err) throw err;
         let sql = `select * from members where projectid=${projectid} and userid=${memberedit}`;
         db.query(sql, (err, role) => {
           if (err) throw err;
-          console.log(role.rows[0].role);
+         
           res.render("projects/memberedit", {
             nama: row.rows[0],
             members: members.rows,
             roles: role.rows[0],
             memberedit,
             projectid,
+            session,
+            namePages
           });
         });
       });
@@ -435,7 +460,7 @@ module.exports = function (db) {
       let sql = `UPDATE members 
         SET role = '${req.body.role}'
         WHERE userid='${memberedit}' and projectid=${projectid}`;
-      console.log(sql);
+      
       db.query(sql, (err) => {
         if (err) throw err;
 
@@ -447,12 +472,12 @@ module.exports = function (db) {
   router.get("/issue/:projectid", helpers.isLoggedIn, (req, res, next) => {
     const projectid = req.params.projectid;
     const { id, subject, tracker } = req.query;
-
+    const session = req.session.user
     const url =
       req.url == `/issue/${projectid}`
         ? `/projects/issue/${projectid}?page=1`
         : `/projects${req.url}`;
-    console.log(req.url);
+
     const page = parseInt(req.query.page || 1);
     const limit = 2;
 
@@ -504,6 +529,8 @@ module.exports = function (db) {
               page,
               pages,
               url,
+              session,
+              namePages
             });
           }
         );
@@ -526,6 +553,7 @@ module.exports = function (db) {
   });
 
   router.get(`/issue/:projectid/add`, helpers.isLoggedIn, (req, res, next) => {
+    const session = req.session.user
     const projectid = req.params.projectid;
     let issue = ` select * from issues where projectid=${projectid}`;
     db.query(issue, (err, issue) => {
@@ -538,6 +566,8 @@ module.exports = function (db) {
           projectid,
           issue: issue.rows,
           ambiluser: ambiluser.rows,
+          session,
+          namePages
         });
       });
     });
@@ -623,6 +653,7 @@ module.exports = function (db) {
     `/issue/:projectid/delete/:id`,
     helpers.isLoggedIn,
     (req, res, next) => {
+      const session = req.session.user
       const projectid = req.params.projectid;
       let deleteissue1 = ` delete from activity where issueid=${req.params.id}`;
       db.query(deleteissue1, (err, deleteissue1) => {
@@ -640,6 +671,7 @@ module.exports = function (db) {
     `/issue/:projectid/edit/:id`,
     helpers.isLoggedIn,
     (req, res, next) => {
+      const session = req.session.user
       const projectid = req.params.projectid;
       let issue = ` select * from issues where projectid=${projectid} and issueid=${req.params.id}`;
       const baseUrl = `http://${req.headers.host}`;
@@ -656,6 +688,8 @@ module.exports = function (db) {
             ambiluser: ambiluser.rows,
             moment: moment,
             baseUrl,
+            session,
+            namePages
           });
         });
       });
@@ -741,9 +775,9 @@ module.exports = function (db) {
               if (err) throw err;
             } )
           }
-          console.log(editissue.rows[0])
+        
           let sql = `insert into activity (time, title, description, author, issueid) Values (now(), '${editissue.rows[0].subject}', '${editissue.rows[0].status}' ,  ${editissue.rows[0].author} , ${req.params.id})`
-          console.log("sql",sql)
+        
           db.query(sql ,
           (err, insertactivity) => {
             if (err) throw err;
@@ -904,7 +938,7 @@ module.exports = function (db) {
 
   router.get(`/activity/:projectid`, helpers.isLoggedIn, (req, res) => {
     
-    
+    const session = req.session.user
     const projectid = req.params.projectid;
     let activity = `SELECT activity.time as time , activity.title as title, activity.issueid as issueid, activity.description as description, users.firstname as firstname, DATE_PART('day', now()::timestamp - time::timestamp) as days FROM  (( activity INNER JOIN issues ON issues.issueid = activity.issueid) INNER JOIN users ON users.userid = activity.author) where projectid = ${projectid} and time between (NOW() - INTERVAL '7 day') and time order by time desc`
     db.query(activity, (err, activity) => {
@@ -917,25 +951,24 @@ module.exports = function (db) {
         result[moment(item.time).format('dddd')] = {date: moment(item.time).format('YYYY-MM-DD'), data: [item]};
       }
       })
+      var today = new Date();
+      var last = new Date(today.getTime() - (7 * 24 * 60 * 60 * 1000));
       console.log(JSON.stringify(result));
     
       res.render(`projects/activity`, {
         projectid,
         activity: activity.rows,
         moment: moment,
-        result
+        result,
+        today,
+        last,
+        session,
+        namePages
       });
     })
   });
 
   
-
-//   SELECT 
-//   activityid,
-//   time,
-//   DATE_PART('day', now()::timestamp - time::timestamp) as days
-// FROM
-//   activity where time between (NOW() - INTERVAL '7 day') and time
 
 
   return router;

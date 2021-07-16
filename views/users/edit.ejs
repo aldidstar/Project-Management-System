@@ -1,0 +1,130 @@
+<%- include('../partials/header') %>
+<form action="" method="post">
+
+  <%- include('../partials/navbar') %>
+  <br>
+  <h1>Edit Data</h1>
+
+  <% if(info.length > 0) { %>
+    <div class="alert alert-primary" role="alert">
+      
+      <%= info %>
+    </div>
+    <% } %>
+
+  <div class="mb-3 row">
+    <label for="Name" class="col-sm-2 col-form-label">Firstname</label>
+    <div class="col-sm-10">
+      <input required
+        type="text"
+        class="form-control"
+        id="Name"
+        name="firstname"
+        placeholder="Firstname"
+        value="<%= memberss.firstname %>"
+      />
+    </div>
+  </div>
+
+  <div class="mb-3 row">
+    <label for="Name" class="col-sm-2 col-form-label">Lastname</label>
+    <div class="col-sm-10">
+      <input required
+        type="text"
+        class="form-control"
+        id="Name"
+        name="lastname"
+        placeholder="Lastname"
+        value="<%= memberss.lastname %>"
+      />
+    </div>
+  </div>
+
+
+  <div class="mb-3 row">
+    <label for="Name" class="col-sm-2 col-form-label">Email</label>
+    <div class="col-sm-10">
+      <input required
+        type="text"
+        class="form-control"
+        id="Name"
+        name="email"
+        placeholder="Email"
+        value="<%= memberss.email %>"
+      />
+    </div>
+  </div>
+<br>
+  <div class="d-flex">
+    <div style="margin-left: -10px;"  class="p-2">Password</div>
+    <div style="margin-left: 120px;" class="p-2"></div>
+    <div class="col">
+       
+  <a style="font-size: 12px;" class="btn btn-primary" href="/users/edit/<%= memberss.userid %>/password">Change Password</a>
+
+</div>
+</div>
+
+<br>
+
+  <div class="d-flex">
+    <div style="margin-left: -10px;" class="p-2">Position</div>
+    <div style="margin-left: 140px;" class="p-2">
+  <div class="col">
+    <input required
+      class="form-check-input"
+      type="radio"
+      name="position"
+      id="exampleRadios1"
+      value="Manager"<%= memberss.position == 'Manager' ? ' checked' : '' %>
+      
+    />
+    <label class="form-check-label" for="exampleRadios1"> Manager </label>
+  </div>
+  <div class="col">
+    <input required
+      class="form-check-input"
+      type="radio"
+      name="position"
+      id="exampleRadios2"
+      value="Software Developer"<%= memberss.position == 'Software Developer' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios2">
+      Software Developer
+    </label>
+  </div>
+  <div class="col">
+    <input required
+      class="form-check-input"
+      type="radio"
+      name="position"
+      id="exampleRadios3"
+      value="Quality Assurance" <%= memberss.position == 'Quality Assurance' ? ' checked' : '' %>
+    />
+    <label class="form-check-label" for="exampleRadios3">
+      Quality Assurance
+    </label>
+  </div>
+</div>
+</div>
+
+<br>
+  <div class="mb-3 row">
+    <label for="Type" class="col-sm-2 col-form-label">Type</label>
+    <div class="col-sm-10">
+        <select required type="boolean" id="Type" name="type" >
+            <option value="">Choose your choice</option>
+            <option value="full time"<%= memberss.type == 'full time' ? ' selected' : '' %>>full time</option>
+            <option value="part time"<%= memberss.type == 'part time' ? ' selected' : '' %>>part time</option>
+          </select>
+      
+    </div>
+  </div>
+
+  <br>
+  <button type="submit" class="btn btn-primary">Save</button>
+
+  <a class="btn btn-warning" href="/users">Back</a>
+</form>
+
+<%- include('../partials/footer') %>

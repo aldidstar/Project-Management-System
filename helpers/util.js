@@ -11,7 +11,7 @@ module.exports = {
         if (req.session.user.role == 'admin') {
             next()
         } else {
-            res.redirect('/')
+            res.redirect('/projects')
         }
     }
 }

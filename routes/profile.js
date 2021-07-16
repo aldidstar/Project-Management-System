@@ -8,10 +8,10 @@ const helpers = require("../helpers/util");
 module.exports = function (db) {
   let namePages = "profile";
   router.get("/", helpers.isLoggedIn, (req, res, next) => {
-   
+    const session = req.session.user;
 
     const { position } = req.query;
-    
+
     var type = req.query.type;
     let sql = `select * from users where email= '${req.session.user.email}'`;
     // let sql = `select * from users `;
@@ -25,39 +25,29 @@ module.exports = function (db) {
           query: req.query,
           type,
           info: req.flash("info"),
-          namePages
+          namePages,
+          session,
         });
       }
     });
   });
 
-
-
   router.post("/", helpers.isLoggedIn, (req, res, next) => {
-    
     let sql = `UPDATE users SET email = '${req.body.email}', type = '${req.body.type}', position = '${req.body.position}'
         WHERE email = '${req.session.user.email}'`;
 
     db.query(sql, (err) => {
       if (err) throw err;
-      
-      
-        req.flash("info", `Data ${req.session.user.firstname} telah di update`);
-        res.redirect("/profile");
-      });
-    });
-  
-  
 
-  router.get("/logout", function (req, res, next) {
-    req.session.destroy(function (err) {
-      res.redirect("/");
+      req.flash("info", `Data ${req.session.user.firstname} telah di update`);
+      res.redirect("/profile");
     });
   });
 
-  router.get("/password", helpers.isLoggedIn, (req, res) =>
-    res.render("profile/password", { info: req.flash("info") })
-  );
+  router.get("/password", helpers.isLoggedIn, (req, res) => {
+    const session = req.session.user;
+    res.render("profile/password", { session, namePages, info: req.flash("info") });
+  });
 
   router.post("/password", helpers.isLoggedIn, (req, res, next) => {
     db.query(
