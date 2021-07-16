@@ -624,11 +624,15 @@ module.exports = function (db) {
     helpers.isLoggedIn,
     (req, res, next) => {
       const projectid = req.params.projectid;
+      let deleteissue1 = ` delete from activity where issueid=${req.params.id}`;
+      db.query(deleteissue1, (err, deleteissue1) => {
+        if (err) throw err;
       let deleteissue = ` delete from issues where issueid=${req.params.id}`;
       db.query(deleteissue, (err, deleteissue) => {
         if (err) throw err;
         res.redirect(`/projects/issue/${projectid}`);
       });
+    });
     }
   );
 
@@ -900,18 +904,20 @@ module.exports = function (db) {
 
   router.get(`/activity/:projectid`, helpers.isLoggedIn, (req, res) => {
     
-    var timeFrom = (X) => {
-      var dates = [];
-      for (let I = 0; I < Math.abs(X); I++) {
-          dates.push(new Date(new Date().getTime() - ((X >= 0 ? I : (I - I - I)) * 24 * 60 * 60 * 1000)).toLocaleString());
-      }
-      return dates;
-  }
-
+    
     const projectid = req.params.projectid;
     let activity = `SELECT activity.time as time , activity.title as title, activity.issueid as issueid, activity.description as description, users.firstname as firstname, DATE_PART('day', now()::timestamp - time::timestamp) as days FROM  (( activity INNER JOIN issues ON issues.issueid = activity.issueid) INNER JOIN users ON users.userid = activity.author) where projectid = ${projectid} and time between (NOW() - INTERVAL '7 day') and time order by time`
     db.query(activity, (err, activity) => {
       if (err) throw err;
+      var timeFrom = (X) => {
+        var dates = [];
+        for (let I = 0; I < Math.abs(X); I++) {
+            dates.push(new Date(new Date().getTime() - ((X >= 0 ? I : (I - I - I)) * 24 * 60 * 60 * 1000)).toLocaleString());
+        }
+        return dates;
+    }
+    console.log(timeFrom(7));
+    
       res.render(`projects/activity`, {
         projectid,
         activity: activity.rows,
@@ -920,6 +926,8 @@ module.exports = function (db) {
       });
     })
   });
+
+  
 
 //   SELECT 
 //   activityid,

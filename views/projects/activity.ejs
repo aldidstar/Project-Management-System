@@ -11,22 +11,20 @@
   <br>
  
 
-  <div class="container-issue">
       
       <h4>Activity</h4>
  
       <ul>
-
-        <% for (let i = 0; i < activity.length; i++) { %>
+        
+        
+             <% activity.forEach((item, index) => { %>
+            <%= ` ${moment(item.time).format('dddd')}` %>
           
-            <%= ` ${moment(activity[i].days).format('dddd')}` %>
-          
-          <li>  <%= ` ${moment(activity[i].time).format('HH:mm')} ${activity[i].title} #${activity[i].issueid} (${activity[i].description}): Description, author: ${activity[i].firstname}`  %></li>
-          <% } %>
+          <li>  <%= ` ${moment(item.time).format('HH:mm')} ${item.title} #${item.issueid} (${item.description}): Description, author: ${item.firstname}`  %></li>
+          <% }) %>
           
       </ul>
       <br>
-  </div>
 
   
 
