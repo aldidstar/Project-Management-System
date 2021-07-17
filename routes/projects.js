@@ -495,7 +495,7 @@ module.exports = function (db) {
     if (tracker) {
       params.push(`issues.tracker = '${tracker}'`);
     }
-    let sqlcount = ` select issueid, subject, tracker from issues where projectid=${projectid}`;
+    let sqlcount = ` select issueid, subject, tracker, status from issues where projectid=${projectid}`;
     if (params.length > 0) {
       sqlcount += ` and ${params.join(" and ")}`;
     }
@@ -507,7 +507,7 @@ module.exports = function (db) {
 
       const total = data.rows.length;
       const pages = Math.ceil(total / limit);
-      let issue = ` select issueid, subject, tracker from issues where projectid=${projectid}`;
+      let issue = ` select issueid, subject, tracker, status from issues where projectid=${projectid}`;
       if (params.length > 0) {
         issue += ` and ${params.join(" and ")}`;
       }
@@ -520,6 +520,7 @@ module.exports = function (db) {
           [req.session.user.email],
           (err, optionissue) => {
             if (err) throw err;
+           
             res.render(`projects/issue`, {
               nama: data.rows,
               optionissue: optionissue.rows[0].optionissue,
@@ -530,13 +531,15 @@ module.exports = function (db) {
               pages,
               url,
               session,
-              namePages
-            });
+              namePages,
+              
           }
         );
       });
     });
   });
+});
+
 
   router.post("/issue/:projectid", helpers.isLoggedIn, (req, res) => {
     const { id, subject, tracker } = req.body;

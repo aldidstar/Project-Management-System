@@ -143,7 +143,9 @@
     <td  id="cekname"><%= item.tracker %></td>
     <% } %>
     <td>
-      <a class="btn btn-success" href="/projects/issue/<%= projectid %>/edit/<%= item.issueid %>">edit</a>
+     
+      <a   class="btn btn-success <%= item.status == 'Closed' ? ' disabled' : ''  %>"  href="/projects/issue/<%= projectid %>/edit/<%= item.issueid %>"  >edit</a>
+     
       <% if(session.role == 'admin') { %>
       <a class="btn btn-danger" href="/projects/issue/<%= projectid %>/delete/<%= item.issueid %>">delete</a>
       <% } %>

@@ -44,25 +44,7 @@ module.exports = function (db) {
     );
   });
 
-  router.get("/register", (req, res, next) => {
-    res.render("index/register", {info: req.flash("info") });
-  });
-
-  router.post("/register", (req, res, next) => {
-  bcrypt.hash(req.body.password, saltRounds, function (err, hash) {
-    let sql = `UPDATE users SET password = '${hash}'
-    WHERE email = '${req.body.email}' `;
-    db.query(sql, (err, row) => {
-      if (err) throw err;
-
-      if (row) {
-       
-       return res.redirect("/");
-      }
-    });
-    })
-})
-
+  
   router.get("/logout", function (req, res, next) {
     req.session.destroy(function (err) {
       res.redirect("/");
